@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent" xmlns:tools="http://schemas.android.com/tools"
+                android:paddingTop="8dp"
+                android:background="#fdf3e1"
+                android:paddingBottom="8dp"
+                android:paddingLeft="16dp"
+                android:paddingRight="8dp"
+                android:layout_height="96dp">
+
+    <TextView
+        tools:text="今天 下午7:45"
+        android:id="@+id/tv_modify_time"
+        android:textSize="12sp"
+        android:gravity="center_vertical"
+        android:layout_width="match_parent"
+        android:layout_height="30dp" android:layout_toLeftOf="@+id/cb_favorite"/>
+    <TextView
+        tools:text="Tip: Markdown 基本功能介绍"
+        android:textSize="14sp"
+        android:gravity="center_vertical"
+        android:id="@+id/tv_note_detail"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_below="@+id/tv_modify_time" android:layout_toLeftOf="@+id/iv_img"/>
+    <CheckBox
+        android:layout_marginRight="12dp"
+        android:id="@+id/cb_favorite"
+        android:gravity="center"
+        android:padding="3dp"
+        android:layout_width="30dp"
+        android:layout_height="30dp" android:layout_alignParentRight="true"/>
+    <ImageView
+        android:id="@+id/iv_img"
+        android:padding="10dp"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_alignParentBottom="true" android:layout_alignParentRight="true"
+        android:src="@mipmap/ic_launcher"/>
+</RelativeLayout>
