@@ -1,4 +1,4 @@
-package xyz.hanks.note.widget;
+package xyz.hanks.note.ui.widget;
 
 import android.content.Context;
 import android.util.AttributeSet;

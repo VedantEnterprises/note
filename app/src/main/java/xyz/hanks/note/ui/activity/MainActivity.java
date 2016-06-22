@@ -1,7 +1,9 @@
-package xyz.hanks.note;
+package xyz.hanks.note.ui.activity;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+
+import xyz.hanks.note.R;
 
 public class MainActivity extends AppCompatActivity {
 
