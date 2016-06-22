@@ -1,4 +1,4 @@
-package xyz.hanks.note;
+package xyz.hanks.note.model;
 
 /**
  * 基础对象
