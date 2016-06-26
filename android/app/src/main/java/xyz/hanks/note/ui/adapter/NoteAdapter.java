@@ -43,6 +43,11 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.NoteItemViewHo
             tvNoteDetail = (TextView) itemView.findViewById(R.id.tv_note_detail);
             cbFavorite = (CheckBox) itemView.findViewById(R.id.cb_favorite);
             ivImage = (ImageView) itemView.findViewById(R.id.iv_img);
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override public void onClick(View v) {
+
+                }
+            });
         }
 
     }
