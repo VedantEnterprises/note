@@ -9,6 +9,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import xyz.hanks.note.R;
+import xyz.hanks.note.ui.activity.EditActivity;
 
 /**
  * Created by hanks on 16/6/22.
@@ -45,7 +46,7 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.NoteItemViewHo
             ivImage = (ImageView) itemView.findViewById(R.id.iv_img);
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override public void onClick(View v) {
-
+                    EditActivity.start(v.getContext());
                 }
             });
         }
