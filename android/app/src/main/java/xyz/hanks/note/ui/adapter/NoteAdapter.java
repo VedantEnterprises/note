@@ -4,7 +4,6 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -21,7 +20,7 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.NoteItemViewHo
     }
 
     @Override public void onBindViewHolder(NoteItemViewHolder holder, int position) {
-        holder.cbFavorite.setChecked(true);
+        // holder.cbFavorite.setChecked(true);
         holder.ivImage.setVisibility(View.VISIBLE);
         holder.tvModifyTime.setText("昨天 12:45");
         holder.tvNoteDetail.setText("点击进来看看还有什么惊喜");
@@ -35,14 +34,14 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.NoteItemViewHo
 
         public TextView tvModifyTime;
         public TextView tvNoteDetail;
-        public CheckBox cbFavorite;
+        public View cbFavorite;
         public ImageView ivImage;
 
         public NoteItemViewHolder(View itemView) {
             super(itemView);
             tvModifyTime = (TextView) itemView.findViewById(R.id.tv_modify_time);
             tvNoteDetail = (TextView) itemView.findViewById(R.id.tv_note_detail);
-            cbFavorite = (CheckBox) itemView.findViewById(R.id.cb_favorite);
+            cbFavorite =  itemView.findViewById(R.id.cb_favorite);
             ivImage = (ImageView) itemView.findViewById(R.id.iv_img);
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override public void onClick(View v) {
