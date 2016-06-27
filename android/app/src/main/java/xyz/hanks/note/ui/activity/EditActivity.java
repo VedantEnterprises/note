@@ -6,10 +6,14 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ListView;
+
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import xyz.hanks.note.R;
 
@@ -28,6 +32,10 @@ public class EditActivity extends AppCompatActivity {
             "\n" +
             "便签内容现在支持分享至新浪长微博。";
     private MyAdapter adapter;
+
+
+    public static final String ATT_IAMGE_TAG = "<image w=%s h=%s describe=%s name=%s>";
+    public static final String ATT_IMAGE_PATTERN_STRING = "<image w=.*? h=.*? describe=.*? name=.*?>";
 
     public static void start(Context context) {
         Intent starter = new Intent(context, EditActivity.class);
@@ -53,10 +61,60 @@ public class EditActivity extends AppCompatActivity {
         listView.setAdapter(adapter);
 
 
-        calc();
+        calcText(noteContent);
     }
 
-    private void calc() {
+    private void calcText(String noteContent) {
+
+        if (noteContent == null) {
+            return;
+        }
+
+        Pattern pattern = Pattern.compile(ATT_IMAGE_PATTERN_STRING);
+
+        Matcher localMatcher = pattern.matcher(noteContent);
+
+        boolean result = localMatcher.find();
+        while (result){
+            int m = localMatcher.start();
+            int n = localMatcher.end();
+            String imageString = noteContent.substring(m, n);
+
+        }
+        for (;;)
+        {
+            bool = localMatcher.find();
+            if (!bool) {
+                break;
+            }
+            if (k == 0) {
+                k = 1;
+            }
+            int m = localMatcher.start();
+            int n = localMatcher.end();
+            String str2 = paramString.substring(m, n);
+            localObject = "";
+            str1 = str1.replace(str2, (CharSequence)localObject);
+        }
+        if (k == 0) {
+            break;
+        }
+        bool = TextUtils.isEmpty(str1);
+        if (!bool) {
+            break;
+        }
+
+        String[] texts = pattern.split(noteContent);
+
+
+
+        Matcher matcher = pattern.matcher(noteContent);
+        if (matcher.find()) {
+            for (int i = 0; i < matcher.groupCount(); i++) {
+                System.out.println(i+"matcher = " + matcher.group(i));
+            }
+        }
+
 
     }
 
