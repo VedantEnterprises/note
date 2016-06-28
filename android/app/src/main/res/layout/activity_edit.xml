@@ -18,13 +18,16 @@
     app:titleTextAppearance="@style/ToolbarTitleAppearance"/>
 
 
-  <ListView android:id="@+id/listView" android:layout_width="match_parent"
-            android:layout_height="match_parent">
+  <ListView android:id="@+id/listView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:divider="@null"
+            android:scrollbars="none"
+            android:dividerHeight="0px">
 
   </ListView>
 
   <EditText android:id="@+id/et_note"
-            android:visibility="gone"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="@null"
@@ -41,6 +44,7 @@
 便签内容现在支持分享至新浪长微博。
 "
             android:textColor="@color/textColor1"
-            android:textSize="15sp"/>
+            android:textSize="15sp"
+            android:visibility="gone"/>
 
 </LinearLayout>
