@@ -27,24 +27,4 @@
 
   </ListView>
 
-  <EditText android:id="@+id/et_note"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@null"
-            android:gravity="left"
-            android:lineSpacingMultiplier="2.33"
-            android:paddingLeft="16dp"
-            android:paddingRight="12dp"
-            android:paddingTop="12dp"
-            android:text="进来看看还有什么惊喜^_^
-
-我们支持把便签的文字直接发送到新浪微博，
-同时你再也不用忍受新浪的数字限制了，当文字超过 140 之后，便签会自动生成排版优雅、字体精美的图片长微博，希望我们的便签能够让你重新喜欢上不那么碎片的表达。试试点击右上角的小飞机，再点击随后出现的菜单中的 “以图片分享” 将图片分享至你的其他应用。
-
-便签内容现在支持分享至新浪长微博。
-"
-            android:textColor="@color/textColor1"
-            android:textSize="15sp"
-            android:visibility="gone"/>
-
 </LinearLayout>

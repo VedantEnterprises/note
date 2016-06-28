@@ -18,5 +18,5 @@
     android:layout_height="match_parent"
     android:lineSpacingMultiplier="2.33"
     android:textColor="@color/textColor1"
-    android:textSize="15sp"/>
+    android:textSize="15dp"/>
 </RelativeLayout>

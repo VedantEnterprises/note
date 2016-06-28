@@ -17,7 +17,7 @@
     android:layout_toLeftOf="@+id/cb_favorite"
     android:gravity="center_vertical"
     android:textColor="@color/textColor2"
-    android:textSize="10sp" tools:text="今天 下午7:45"/>
+    android:textSize="10dp" tools:text="今天 下午7:45"/>
   <TextView
     android:id="@+id/tv_note_detail"
     android:layout_width="match_parent"
@@ -26,7 +26,7 @@
     android:layout_toLeftOf="@+id/iv_img"
     android:gravity="center_vertical"
     android:textColor="@color/textColor1"
-    android:textSize="14sp" tools:text="Tip: Markdown 基本功能介绍"/>
+    android:textSize="14dp" tools:text="Tip: Markdown 基本功能介绍"/>
   <ImageView
     android:id="@+id/cb_favorite"
     android:layout_width="30dp"
