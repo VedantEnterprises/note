@@ -7,15 +7,22 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
+import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.TextView;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import xyz.hanks.note.R;
+import xyz.hanks.note.util.FileUtils;
 
 /**
  * Edit note Activity
@@ -23,19 +30,17 @@ import xyz.hanks.note.R;
  */
 public class EditActivity extends AppCompatActivity {
 
+    public static final String ATT_IAMGE_TAG = "<image w=%s h=%s describe=%s name=%s>";
+    public static final String ATT_IMAGE_PATTERN_STRING = "<image w=.*? h=.*? describe=.*? name=.*?>";
+    List<NoteItem> data = new ArrayList<>();
     private ListView listView;
-
     private String noteContent = "进来看看还有什么惊喜^_^\n" +
             "\n" +
             "我们支持把便签的文字直接发送到新<image w=858 h=483 describe= name=Note_123.jpg>浪微博，\n" +
-            "同时你再也不用忍受新浪的数字限制了，当文字超过 140 之后，便签会自动生成排版优雅、字体精美的图片长微博，希望我们的便签能够让你重新喜欢上不那么碎片的表达。试试点击右上角的小飞机，再点击随后出现的菜单中的 “以图片分享” 将图片分享至你的其他应用。\n" +
+            "同时你再也不用忍受新浪的数字限制了，当文字超过 140 之后，便签会自动生成排版优雅、字体<image w=858 h=223 describe=no one name=Note_453.jpg>精美的图片长微博，希望我们的便签能够让你重新喜欢上不那么碎片的表达。试试点击右上角的小飞机，再点击随后出现的菜单中的 “以图片分享” 将图片分享至你的其他应用。\n" +
             "\n" +
             "便签内容现在支持分享至新浪长微博。";
     private MyAdapter adapter;
-
-
-    public static final String ATT_IAMGE_TAG = "<image w=%s h=%s describe=%s name=%s>";
-    public static final String ATT_IMAGE_PATTERN_STRING = "<image w=.*? h=.*? describe=.*? name=.*?>";
 
     public static void start(Context context) {
         Intent starter = new Intent(context, EditActivity.class);
@@ -72,57 +77,73 @@ public class EditActivity extends AppCompatActivity {
 
         Pattern pattern = Pattern.compile(ATT_IMAGE_PATTERN_STRING);
 
-        Matcher localMatcher = pattern.matcher(noteContent);
+        data.clear();
 
-        boolean result = localMatcher.find();
-        while (result){
-            int m = localMatcher.start();
-            int n = localMatcher.end();
-            String imageString = noteContent.substring(m, n);
-
-        }
-        for (;;)
-        {
-            bool = localMatcher.find();
-            if (!bool) {
+        String tmp = noteContent;
+        while (true) {
+            Matcher localMatcher = pattern.matcher(tmp);
+            boolean result = localMatcher.find();
+            if (!result) {
                 break;
             }
-            if (k == 0) {
-                k = 1;
-            }
             int m = localMatcher.start();
             int n = localMatcher.end();
-            String str2 = paramString.substring(m, n);
-            localObject = "";
-            str1 = str1.replace(str2, (CharSequence)localObject);
-        }
-        if (k == 0) {
-            break;
-        }
-        bool = TextUtils.isEmpty(str1);
-        if (!bool) {
-            break;
-        }
-
-        String[] texts = pattern.split(noteContent);
+            String imageString = tmp.substring(m, n);
 
 
-
-        Matcher matcher = pattern.matcher(noteContent);
-        if (matcher.find()) {
-            for (int i = 0; i < matcher.groupCount(); i++) {
-                System.out.println(i+"matcher = " + matcher.group(i));
+            if (m > 0) {
+                NoteItem noteItem = new NoteItem();
+                noteItem.type = 0;
+                noteItem.content = tmp.substring(0, m);
+                data.add(noteItem);
             }
+
+            NoteItem noteItem = new NoteItem();
+
+            int wIndex = imageString.indexOf("w=");
+            int hIndex = imageString.indexOf("h=");
+            int dIndex = imageString.indexOf("describe=");
+            int nIndex = imageString.indexOf("name=");
+
+            noteItem.type = 1;
+            noteItem.width = Integer.parseInt(imageString.substring(wIndex + 2, hIndex - 1));
+            noteItem.height = Integer.parseInt(imageString.substring(hIndex + 2, dIndex - 1));
+            noteItem.describe = imageString.substring(dIndex + 9, nIndex - 1);
+            noteItem.name = imageString.substring(nIndex + 5, imageString.length() - 1);
+            noteItem.start = m;
+            noteItem.end = n;
+            data.add(noteItem);
+
+            Log.e("........", imageString + "," + m + "," + n);
+            tmp = tmp.substring(n);
+
         }
 
+        if (!TextUtils.isEmpty(tmp)) {
+            NoteItem noteItem = new NoteItem();
+            noteItem.type = 0;
+            noteItem.content = tmp;
+            data.add(noteItem);
+        }
 
     }
 
+    class NoteItem {
+        int type; // 0 文字 1 图片
+        String content; // 如果是文字的内容
+        String name;
+        String describe;
+        int width;
+        int height;
+        int start;
+        int end;
+    }
 
-    class MyAdapter extends BaseAdapter{
+
+    class MyAdapter extends BaseAdapter {
 
         @Override public int getCount() {
-            return 0;
+            return data.size();
         }
 
         @Override public Object getItem(int position) {
@@ -134,7 +155,25 @@ public class EditActivity extends AppCompatActivity {
         }
 
         @Override public View getView(int position, View convertView, ViewGroup parent) {
-            return null;
+            if (convertView == null) {
+                convertView = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_list_note_detail, parent, false);
+            }
+            TextView editText = (TextView) convertView.findViewById(R.id.et_note_item);
+            ImageView imageView = (ImageView) convertView.findViewById(R.id.iv_img_item);
+
+            NoteItem noteItem = data.get(position);
+            if (noteItem.type == 0) {
+                editText.setText(noteItem.content);
+                imageView.setVisibility(View.GONE);
+                editText.setVisibility(View.VISIBLE);
+            } else if (noteItem.type == 1) {
+                editText.setVisibility(View.GONE);
+                imageView.setVisibility(View.VISIBLE);
+                imageView.setImageBitmap(FileUtils.getBitmapFromFile(noteItem.name));
+                imageView.getLayoutParams().height = noteItem.height;
+            }
+
+            return convertView;
         }
     }
 
