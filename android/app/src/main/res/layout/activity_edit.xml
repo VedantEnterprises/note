@@ -17,24 +17,28 @@
         app:theme="@style/ThemeOverlay.AppCompat.Dark"
         app:titleTextAppearance="@style/ToolbarTitleAppearance"/>
 
-
-    <ListView
-        android:id="@+id/listView"
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:divider="@null"
-        android:dividerHeight="0px"
-        android:scrollbars="none">
-    </ListView>
+        android:layout_height="match_parent">
 
-    <ListView
-        android:id="@+id/backListView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:divider="@null"
-        android:dividerHeight="0px"
-        android:scrollbars="none"
-        android:visibility="gone">
-    </ListView>
+        <ListView
+            android:id="@+id/backListView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:divider="@null"
+            android:dividerHeight="0px"
+            android:scrollbars="none">
+        </ListView>
+
+        <ListView
+            android:id="@+id/listView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:divider="@null"
+            android:dividerHeight="0px"
+            android:scrollbars="none">
+        </ListView>
+
+    </FrameLayout>
 
 </LinearLayout>

@@ -18,7 +18,7 @@
         android:id="@+id/et_note_item"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:lineSpacingMultiplier="2.33"
+        android:lineSpacingMultiplier="2.2"
         android:textColor="@color/textColor1"
         android:textSize="16dp"/>
 </RelativeLayout>
