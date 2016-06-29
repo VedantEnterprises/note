@@ -5,26 +5,36 @@
               android:layout_height="match_parent"
               android:orientation="vertical">
 
-  <android.support.v7.widget.Toolbar
-    android:id="@+id/toolbar"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:background="@color/colorPrimary"
-    android:elevation="1dp"
-    android:fitsSystemWindows="true"
-    android:minHeight="?attr/actionBarSize"
-    app:subtitleTextAppearance="@style/ToolbarSubtitleAppearance"
-    app:theme="@style/ThemeOverlay.AppCompat.Dark"
-    app:titleTextAppearance="@style/ToolbarTitleAppearance"/>
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/colorPrimary"
+        android:elevation="1dp"
+        android:fitsSystemWindows="true"
+        android:minHeight="?attr/actionBarSize"
+        app:subtitleTextAppearance="@style/ToolbarSubtitleAppearance"
+        app:theme="@style/ThemeOverlay.AppCompat.Dark"
+        app:titleTextAppearance="@style/ToolbarTitleAppearance"/>
 
 
-  <ListView android:id="@+id/listView"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:divider="@null"
-            android:scrollbars="none"
-            android:dividerHeight="0px">
+    <ListView
+        android:id="@+id/listView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:divider="@null"
+        android:dividerHeight="0px"
+        android:scrollbars="none">
+    </ListView>
 
-  </ListView>
+    <ListView
+        android:id="@+id/backListView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:divider="@null"
+        android:dividerHeight="0px"
+        android:scrollbars="none"
+        android:visibility="gone">
+    </ListView>
 
 </LinearLayout>
