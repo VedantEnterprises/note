@@ -302,13 +302,51 @@ public class EditActivity extends AppCompatActivity {
 
         @Override public View getView(int position, View convertView, ViewGroup parent) {
             if (convertView == null) {
-                convertView = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_list_note_detail_back, parent, false);
+                convertView = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_list_note_detail, parent, false);
             }
             final TextView editText = (TextView) convertView.findViewById(R.id.et_note_item);
-            if (draggable && position < backupData.size()) {
-                editText.setText(backupData.get(position));
+            ImageView imageView = (ImageView) convertView.findViewById(R.id.iv_img_item);
+            String item = backupData.get(position);
+            if (!isImage(item)) {
+                if (draggable && position < backupData.size()) {
+                    editText.setText(backupData.get(position));
+                } else {
+                    editText.setText("" + position);
+                }
+                editText.getLayoutParams().height = ITEM_HEIGHT;
+                imageView.setVisibility(View.GONE);
+                editText.setVisibility(View.VISIBLE);
             } else {
-                editText.setText("" + position);
+
+
+                NoteItem noteItem = new NoteItem();
+
+                int wIndex = item.indexOf("w=");
+                int hIndex = item.indexOf("h=");
+                int dIndex = item.indexOf("describe=");
+                int nIndex = item.indexOf("name=");
+
+                noteItem.type = 1;
+                noteItem.width = Integer.parseInt(item.substring(wIndex + 2, hIndex - 1));
+                noteItem.height = Integer.parseInt(item.substring(hIndex + 2, dIndex - 1));
+                noteItem.describe = item.substring(dIndex + 9, nIndex - 1);
+                noteItem.name = item.substring(nIndex + 5, item.length() - 1);
+
+                editText.setVisibility(View.GONE);
+                imageView.setVisibility(View.VISIBLE);
+                imageView.setImageBitmap(FileUtils.getBitmapFromFile(noteItem.name));
+                int itemCount = noteItem.height % ITEM_HEIGHT == 0 ? noteItem.height / ITEM_HEIGHT : noteItem.height / ITEM_HEIGHT + 1;
+                int totalHeight = 0;
+                for (int i = 0; i < position; i++) {
+                    View child = backupListView.getChildAt(i);
+                    totalHeight += child.getMeasuredHeight();
+                }
+                int gap = 0;
+                if (totalHeight % ITEM_HEIGHT != 0) {
+                    gap = ITEM_HEIGHT - totalHeight % ITEM_HEIGHT;
+                }
+                Log.e(TAG, totalHeight + "??????????????????" + gap + "," + (itemCount * ITEM_HEIGHT + gap));
+                imageView.getLayoutParams().height = itemCount * ITEM_HEIGHT + gap;
             }
             return convertView;
         }
