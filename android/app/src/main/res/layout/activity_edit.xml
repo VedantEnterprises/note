@@ -30,14 +30,14 @@
             android:scrollbars="none">
         </ListView>
 
-        <ListView
+        <com.github.ksoichiro.android.observablescrollview.ObservableListView
             android:id="@+id/listView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:divider="@null"
             android:dividerHeight="0px"
             android:scrollbars="none">
-        </ListView>
+        </com.github.ksoichiro.android.observablescrollview.ObservableListView>
 
     </FrameLayout>
 

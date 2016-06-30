@@ -2,30 +2,32 @@ package xyz.hanks.note.ui.activity;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Typeface;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.text.Layout;
-import android.text.StaticLayout;
-import android.text.TextPaint;
 import android.text.TextUtils;
-import android.text.style.TextAppearanceSpan;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
-import android.widget.AbsListView;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.github.ksoichiro.android.observablescrollview.ObservableListView;
+import com.github.ksoichiro.android.observablescrollview.ObservableScrollViewCallbacks;
+import com.github.ksoichiro.android.observablescrollview.ScrollState;
+
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -44,7 +46,8 @@ public class EditActivity extends AppCompatActivity {
     private final int ITEM_HEIGHT = 125;
     List<NoteItem> data = new ArrayList<>();
     List<String> backupData = new ArrayList<>();
-    private ListView listView;
+    Map<Integer, List<String>> lineTextMap = new HashMap<>();
+    private ObservableListView listView;
     private ListView backupListView;
     private String noteContent = "进来看看还有什么惊喜^_^\n" +
             "\n" +
@@ -54,65 +57,11 @@ public class EditActivity extends AppCompatActivity {
             "便签内容现在支持分享至新浪长微博。";
     private MyAdapter adapter;
     private MyBackAdapter backupAdapter;
+    private boolean draggable;
 
     public static void start(Context context) {
         Intent starter = new Intent(context, EditActivity.class);
         context.startActivity(starter);
-    }
-
-    /**
-     * http://stackoverflow.com/questions/18966943/how-does-a-android-textview-breaks-the-text-into-lines
-     * Returns the original text if it fits in the specified width (<code>avail</code>) with
-     * the properties of the specified TextAppearanceSpan (<code>textAppearance</code>), or,
-     * if it does not fit, a truncated copy with ellipsis character added at the end
-     * (<code>TextUtils.TruncateAt.END</code>).
-     *
-     * @param paint          the TextPaint from the TextView
-     * @param text           the text to truncated
-     * @param textAppearance text typeface, size, and style
-     * @param avail          the available width
-     * @param maxLines       maximum number of displayed lines
-     * @return the original text or a truncated copy
-     * @see TextView#getPaint()
-     * @see TextAppearanceSpan
-     * @see TextUtils.TruncateAt#END
-     */
-    public static String ellipsize(final TextPaint paint,
-                                   final String text,
-                                   final TextAppearanceSpan textAppearance,
-                                   final int avail,
-                                   final int maxLines) {
-
-        if (TextUtils.isEmpty(text)) {
-            return null;
-        }
-
-        final StringBuilder builder = new StringBuilder();
-
-        paint.setTextSize(textAppearance.getTextSize());
-        paint.setTypeface(Typeface.create(textAppearance.getFamily(), textAppearance.getTextStyle()));
-
-        final StaticLayout layout = new StaticLayout(text, paint, avail, Layout.Alignment.ALIGN_NORMAL, 1.0f, 0.0f, false);
-        final int lineCount = layout.getLineCount();
-
-        final int lines = lineCount < maxLines ? lineCount : maxLines;
-
-        for (int i = 0; i < lines; i++) {
-
-            final int lineStart = layout.getLineStart(i);
-            final int lineEnd = layout.getLineEnd(i);
-            String substring = text.substring(lineStart, lineEnd);
-
-            if ((i == (maxLines - 1)) && (lineCount > maxLines)) {
-
-                final String lastLine = substring.concat("\u2026");
-                substring = TextUtils.ellipsize(lastLine, paint, avail, TextUtils.TruncateAt.END, true, null).toString();
-            }
-
-            builder.append(substring);
-        }
-
-        return builder.toString();
     }
 
     @Override protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -128,34 +77,74 @@ public class EditActivity extends AppCompatActivity {
         toolbar.setNavigationIcon(R.drawable.abc_ic_ab_back_mtrl_am_alpha);
         setSupportActionBar(toolbar);
 
-        listView = (ListView) findViewById(R.id.listView);
+        listView = (ObservableListView) findViewById(R.id.listView);
         adapter = new MyAdapter();
         listView.setAdapter(adapter);
-
-        listView.setOnScrollListener(new MyScrollListener());
 
         backupListView = (ListView) findViewById(R.id.backListView);
         backupAdapter = new MyBackAdapter();
         backupListView.setAdapter(backupAdapter);
 
+        listView.setScrollViewCallbacks(new ObservableScrollViewCallbacks() {
+            @Override
+            public void onScrollChanged(int scrollY, boolean firstScroll, boolean dragging) {
+                Log.e(TAG, "onScrollChanged=" + scrollY);
+                backupListView.setSelectionFromTop(0, -scrollY);
+            }
+
+            @Override public void onDownMotionEvent() {
+            }
+
+            @Override public void onUpOrCancelMotionEvent(ScrollState scrollState) {
+            }
+        });
         calcText(noteContent);
-        calcBackupText();
     }
 
     private void calcBackupText() {
+        backupData.clear();
+
+        for (Integer integer : lineTextMap.keySet()) {
+            Log.e(TAG,integer+"lineTextMap");
+        }
+        for(int i=0;i<10000;i++){
+            if (lineTextMap.containsKey(i)) {
+                List<String> strings = lineTextMap.get(i);
+                backupData.addAll(strings);
+            }else {
+                break;
+            }
+        }
+        listView.setVisibility(View.GONE);
+        backupAdapter.notifyDataSetChanged();
+    }
+
+    @Override public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                finish();
+                break;
+            case R.id.menu_edit:
+                draggable = !draggable;
+                calcBackupText();
+                break;
+        }
+
+        return true;
 
     }
 
-    private void calcText(String noteContent) {
+    @Override public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_edit, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
 
+    private void calcText(String noteContent) {
         if (noteContent == null) {
             return;
         }
-
         Pattern pattern = Pattern.compile(ATT_IMAGE_PATTERN_STRING);
-
         data.clear();
-
         String tmp = noteContent;
         while (true) {
             Matcher localMatcher = pattern.matcher(tmp);
@@ -166,7 +155,6 @@ public class EditActivity extends AppCompatActivity {
             int m = localMatcher.start();
             int n = localMatcher.end();
             String imageString = tmp.substring(m, n);
-
 
             if (m > 0) {
                 NoteItem noteItem = new NoteItem();
@@ -215,58 +203,29 @@ public class EditActivity extends AppCompatActivity {
     }
 
     class MyBackAdapter extends BaseAdapter {
-
         @Override public int getCount() {
-            return backupData.size();
+            return Integer.MAX_VALUE;
         }
 
-        @Override public Object getItem(int position) {
+        @Override public Object getItem(int i) {
             return null;
         }
 
-        @Override public long getItemId(int position) {
+        @Override public long getItemId(int i) {
             return 0;
         }
 
         @Override public View getView(int position, View convertView, ViewGroup parent) {
             if (convertView == null) {
-                convertView = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_list_note_detail, parent, false);
-                convertView.setBackgroundDrawable(getDrawable(R.drawable.note_paper_middle));
-                convertView.getLayoutParams().height = ITEM_HEIGHT;
+                convertView = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_list_note_detail_back, parent, false);
             }
             final TextView editText = (TextView) convertView.findViewById(R.id.et_note_item);
-            ImageView imageView = (ImageView) convertView.findViewById(R.id.iv_img_item);
-            // editText.setText(backupData.get(position));
-            imageView.setVisibility(View.GONE);
-            editText.setVisibility(View.VISIBLE);
+            if (draggable && position < backupData.size()) {
+                editText.setText(backupData.get(position));
+            } else {
+                editText.setText("" + position);
+            }
             return convertView;
-        }
-    }
-
-    private class MyScrollListener implements AbsListView.OnScrollListener {
-
-        @Override
-        public void onScrollStateChanged(AbsListView view, int scrollState) {
-            // 关键代码
-            if (scrollState == SCROLL_STATE_IDLE
-                    || scrollState == SCROLL_STATE_TOUCH_SCROLL) {
-                View subView = view.getChildAt(0);
-                if (subView != null) {
-                    final int top = subView.getTop();
-                    final int position = view.getFirstVisiblePosition();
-                    backupListView.setSelectionFromTop(position,top);
-                }
-            }
-        }
-        @Override
-        public void onScroll(AbsListView view, int firstVisibleItem,
-                             int visibleItemCount, int totalItemCount) {
-            // 关键代码
-            View subView = view.getChildAt(0);
-            if (subView != null) {
-                final int top = subView.getTop();
-                backupListView.setSelectionFromTop(firstVisibleItem,top);
-            }
         }
     }
 
@@ -284,7 +243,7 @@ public class EditActivity extends AppCompatActivity {
             return 0;
         }
 
-        @Override public View getView(int position, View convertView, ViewGroup parent) {
+        @Override public View getView(final int position, View convertView, ViewGroup parent) {
             if (convertView == null) {
                 convertView = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_list_note_detail, parent, false);
                 convertView.setTag(true);
@@ -305,15 +264,16 @@ public class EditActivity extends AppCompatActivity {
                             } else {
                                 editText.getViewTreeObserver().removeGlobalOnLayoutListener(this);
                             }
+                            List<String> lineTextList = new ArrayList();
                             int lineCount = editText.getLayout().getLineCount();
                             for (int i = 0; i < lineCount; i++) {
                                 int lineStart = editText.getLayout().getLineStart(i);
                                 int lineEnd = editText.getLayout().getLineEnd(i);
                                 String lineText = editText.getText().subSequence(lineStart, lineEnd).toString();
                                 Log.e(TAG, lineStart + "," + lineEnd + "," + lineText + "," + lineCount);
-                                backupData.add(lineText);
-                                backupAdapter.notifyDataSetChanged();
+                                lineTextList.add(lineText);
                             }
+                            lineTextMap.put(position, lineTextList);
                         }
                     });
                 }
@@ -326,24 +286,22 @@ public class EditActivity extends AppCompatActivity {
                 int itemCount = noteItem.height % ITEM_HEIGHT == 0 ? noteItem.height / ITEM_HEIGHT : noteItem.height / ITEM_HEIGHT + 1;
 
                 int totalHeight = 0;
-                for(int i=0;i<position;i++){
+                for (int i = 0; i < position; i++) {
                     View child = listView.getChildAt(i);
-                    totalHeight+= child.getMeasuredHeight();
+                    totalHeight += child.getMeasuredHeight();
                 }
                 int gap = 0;
-                if(totalHeight%ITEM_HEIGHT!=0){
+                if (totalHeight % ITEM_HEIGHT != 0) {
                     gap = ITEM_HEIGHT - totalHeight % ITEM_HEIGHT;
                 }
-                Log.e(TAG,totalHeight+"??????????????????"+gap+","+ (itemCount * ITEM_HEIGHT+gap));
-                imageView.getLayoutParams().height = itemCount * ITEM_HEIGHT+gap;
+                Log.e(TAG, totalHeight + "??????????????????" + gap + "," + (itemCount * ITEM_HEIGHT + gap));
+                imageView.getLayoutParams().height = itemCount * ITEM_HEIGHT + gap;
 
-                if ((Boolean) convertView.getTag()) {
-                    convertView.setTag(false);
-                    for (int i = 0; i < itemCount; i++) {
-                        backupData.add("");
-                    }
-                    backupAdapter.notifyDataSetChanged();
+                List<String> lineTextList = new ArrayList();
+                for (int i = 0; i < itemCount; i++) {
+                    lineTextList.add("");
                 }
+                lineTextMap.put(position, lineTextList);
             }
             //convertView.setBackgroundDrawable(getDrawable(R.drawable.listview_bg));
             return convertView;
