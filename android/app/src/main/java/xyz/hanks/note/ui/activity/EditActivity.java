@@ -32,6 +32,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import xyz.hanks.note.R;
+import xyz.hanks.note.ui.widget.draglist.DragSortListView;
 import xyz.hanks.note.util.FileUtils;
 
 /**
@@ -48,7 +49,7 @@ public class EditActivity extends AppCompatActivity {
     List<String> backupData = new ArrayList<>();
     Map<Integer, List<String>> lineTextMap = new HashMap<>();
     private ObservableListView listView;
-    private ListView backupListView;
+    private DragSortListView backupListView;
     private String noteContent = "进来看看还有什么惊喜^_^\n" +
             "\n" +
             "我们支持把便签的文字直接发送到新<image w=858 h=483 describe= name=Note_123.jpg>浪微博，\n" +
@@ -57,7 +58,19 @@ public class EditActivity extends AppCompatActivity {
             "便签内容现在支持分享至新浪长微博。";
     private MyAdapter adapter;
     private MyBackAdapter backupAdapter;
+    private BackgroundAdapter backgroundAdapter;
     private boolean draggable;
+    private ListView backgroundListView;
+//    private DragSortListView.DragListener onDrag =
+//            new DragSortListView.DragListener() {
+//                @Override public void drag(int from, int to) {
+//                    if("[图]".equals(backupData.get(from))){
+//                        backupListView.setDragEnabled(true);
+//                    }else {
+//                        backupListView.setDragEnabled(false);
+//                    }
+//                }
+//            };
 
     public static void start(Context context) {
         Intent starter = new Intent(context, EditActivity.class);
@@ -81,15 +94,24 @@ public class EditActivity extends AppCompatActivity {
         adapter = new MyAdapter();
         listView.setAdapter(adapter);
 
-        backupListView = (ListView) findViewById(R.id.backListView);
+        backgroundListView = (ListView) findViewById(R.id.backgroundListView);
+        backgroundAdapter = new BackgroundAdapter();
+        backgroundListView.setAdapter(backgroundAdapter);
+
+        backupListView = (DragSortListView) findViewById(R.id.backListView);
         backupAdapter = new MyBackAdapter();
         backupListView.setAdapter(backupAdapter);
+//        backupListView.setDragListener(onDrag);
+backupListView.setDropListener(onDrop);
+
 
         listView.setScrollViewCallbacks(new ObservableScrollViewCallbacks() {
             @Override
             public void onScrollChanged(int scrollY, boolean firstScroll, boolean dragging) {
                 Log.e(TAG, "onScrollChanged=" + scrollY);
-                backupListView.setSelectionFromTop(0, -scrollY);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    backgroundListView.setSelectionFromTop(0, -scrollY);
+                }
             }
 
             @Override public void onDownMotionEvent() {
@@ -98,7 +120,35 @@ public class EditActivity extends AppCompatActivity {
             @Override public void onUpOrCancelMotionEvent(ScrollState scrollState) {
             }
         });
-        calcText(noteContent);
+        calcText();
+    }
+
+    private DragSortListView.DropListener onDrop =
+            new DragSortListView.DropListener() {
+                @Override
+                public void drop(int from, int to) {
+                    if (from != to) {
+                        String item = backupData.get(from);
+                        backupData.remove(from);
+                        backupData.add(to,item);
+                        backupAdapter.notifyDataSetChanged();
+
+                        StringBuilder sb = new StringBuilder();
+                        for (String s : backupData) {
+                            sb.append(s);
+                        }
+                        noteContent = sb.toString();
+
+                        calcText();
+
+                    }
+                }
+            };
+
+
+    private boolean isImage(String str){
+        Pattern pattern = Pattern.compile(ATT_IMAGE_PATTERN_STRING);
+        return pattern.matcher(str).find();
     }
 
     private void calcBackupText() {
@@ -107,15 +157,17 @@ public class EditActivity extends AppCompatActivity {
         for (Integer integer : lineTextMap.keySet()) {
             Log.e(TAG,integer+"lineTextMap");
         }
-        for(int i=0;i<10000;i++){
-            if (lineTextMap.containsKey(i)) {
-                List<String> strings = lineTextMap.get(i);
+        for(int i=0;i<data.size();i++){
+
+            List<String> strings = lineTextMap.get(i);
+            if(data.get(i).type == 0){// 文字
                 backupData.addAll(strings);
             }else {
-                break;
+                backupData.add(strings.get(0));
             }
         }
         listView.setVisibility(View.GONE);
+        backupListView.setVisibility(View.VISIBLE);
         backupAdapter.notifyDataSetChanged();
     }
 
@@ -139,8 +191,8 @@ public class EditActivity extends AppCompatActivity {
         return super.onCreateOptionsMenu(menu);
     }
 
-    private void calcText(String noteContent) {
-        if (noteContent == null) {
+    private void calcText() {
+        if (TextUtils.isEmpty(noteContent)) {
             return;
         }
         Pattern pattern = Pattern.compile(ATT_IMAGE_PATTERN_STRING);
@@ -188,6 +240,9 @@ public class EditActivity extends AppCompatActivity {
             noteItem.content = tmp;
             data.add(noteItem);
         }
+        draggable = false;
+        listView.setVisibility(View.VISIBLE);
+        backupListView.setVisibility(View.GONE);
         adapter.notifyDataSetChanged();
     }
 
@@ -202,9 +257,29 @@ public class EditActivity extends AppCompatActivity {
         int end;
     }
 
-    class MyBackAdapter extends BaseAdapter {
+    class BackgroundAdapter extends BaseAdapter {
         @Override public int getCount() {
             return Integer.MAX_VALUE;
+        }
+
+        @Override public Object getItem(int i) {
+            return null;
+        }
+
+        @Override public long getItemId(int i) {
+            return 0;
+        }
+
+        @Override public View getView(int position, View convertView, ViewGroup parent) {
+            if (convertView == null) {
+                convertView = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_list_note_detail_background, parent, false);
+            }
+            return convertView;
+        }
+    }
+    class MyBackAdapter extends BaseAdapter {
+        @Override public int getCount() {
+            return backupData.size();
         }
 
         @Override public Object getItem(int i) {
@@ -298,9 +373,7 @@ public class EditActivity extends AppCompatActivity {
                 imageView.getLayoutParams().height = itemCount * ITEM_HEIGHT + gap;
 
                 List<String> lineTextList = new ArrayList();
-                for (int i = 0; i < itemCount; i++) {
-                    lineTextList.add("");
-                }
+                lineTextList.add("<image w="+noteItem.width+" h="+noteItem.height+" describe="+noteItem.describe+" name="+noteItem.name+">");
                 lineTextMap.put(position, lineTextList);
             }
             //convertView.setBackgroundDrawable(getDrawable(R.drawable.listview_bg));

@@ -1,14 +1,10 @@
 package xyz.hanks.note.model;
 
-import io.realm.RealmObject;
-import io.realm.annotations.PrimaryKey;
-
 /**
  * 单个笔记
  * Created by hanks on 16/6/22.
  */
-public class NoteItem extends RealmObject {
-    @PrimaryKey
+public class NoteItem  {
     public int _id;
     public long modify_time;
     public String location;

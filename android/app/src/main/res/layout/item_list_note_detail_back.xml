@@ -8,6 +8,7 @@
         android:paddingLeft="30dp"
         android:paddingRight="12dp"
         android:id="@+id/et_note_item"
+        android:text=""
         android:layout_width="match_parent"
         android:layout_height="125px"
         android:lineSpacingMultiplier="2.15"

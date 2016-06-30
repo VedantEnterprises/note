@@ -5,7 +5,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 
 import io.realm.Realm;
 import xyz.hanks.note.R;
@@ -40,12 +39,13 @@ public class MainActivity extends AppCompatActivity {
 //                realm.copyToRealm(noteItem);
             }
         });
-        NoteItem first = realm.where(NoteItem.class).equalTo("_id",22).findFirst();
-        NoteItem result = realm.copyFromRealm(first);
-        Log.e("............",first!=null?first.toString():"null");
-        realm.close();
-        return result;
+//        NoteItem first = realm.where(NoteItem.class).equalTo("_id",22).findFirst();
+//        NoteItem result = realm.copyFromRealm(first);
+//        Log.e("............",first!=null?first.toString():"null");
+//        realm.close();
+//        return result;
 
+        return null;
     }
 
     private void setupUI() {
