@@ -1,5 +1,7 @@
 package xyz.hanks.note.ui.activity;
 
+import android.animation.Animator;
+import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
@@ -12,10 +14,10 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
-import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -127,15 +129,15 @@ public class EditActivity extends AppCompatActivity {
         backupListView.setDropListener(onDrop);
 
 
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                if (data.get(position).type == 1) {// image
-                    draggable = true;
-                    calcBackupText();
-                }
-            }
-        });
+        //        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        //            @Override
+        //            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        //                if (data.get(position).type == 1) {// image
+        //                    draggable = true;
+        //                    calcBackupText();
+        //                }
+        //            }
+        //        });
 
         listView.setScrollViewCallbacks(new ObservableScrollViewCallbacks() {
             @Override
@@ -302,52 +304,56 @@ public class EditActivity extends AppCompatActivity {
 
         @Override public View getView(int position, View convertView, ViewGroup parent) {
             if (convertView == null) {
-                convertView = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_list_note_detail, parent, false);
+                convertView = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_list_note_detail_back, parent, false);
             }
             final TextView editText = (TextView) convertView.findViewById(R.id.et_note_item);
-            ImageView imageView = (ImageView) convertView.findViewById(R.id.iv_img_item);
-            String item = backupData.get(position);
-            if (!isImage(item)) {
-                if (draggable && position < backupData.size()) {
-                    editText.setText(backupData.get(position));
-                } else {
-                    editText.setText("" + position);
-                }
-                editText.getLayoutParams().height = ITEM_HEIGHT;
-                imageView.setVisibility(View.GONE);
-                editText.setVisibility(View.VISIBLE);
+            //            final ImageView imageView = (ImageView) convertView.findViewById(R.id.iv_img_item);
+            //            String item = backupData.get(position);
+            //            if (!isImage(item)) {
+            if (draggable && position < backupData.size()) {
+                editText.setText(backupData.get(position));
             } else {
-
-
-                NoteItem noteItem = new NoteItem();
-
-                int wIndex = item.indexOf("w=");
-                int hIndex = item.indexOf("h=");
-                int dIndex = item.indexOf("describe=");
-                int nIndex = item.indexOf("name=");
-
-                noteItem.type = 1;
-                noteItem.width = Integer.parseInt(item.substring(wIndex + 2, hIndex - 1));
-                noteItem.height = Integer.parseInt(item.substring(hIndex + 2, dIndex - 1));
-                noteItem.describe = item.substring(dIndex + 9, nIndex - 1);
-                noteItem.name = item.substring(nIndex + 5, item.length() - 1);
-
-                editText.setVisibility(View.GONE);
-                imageView.setVisibility(View.VISIBLE);
-                imageView.setImageBitmap(FileUtils.getBitmapFromFile(noteItem.name));
-                int itemCount = noteItem.height % ITEM_HEIGHT == 0 ? noteItem.height / ITEM_HEIGHT : noteItem.height / ITEM_HEIGHT + 1;
-                int totalHeight = 0;
-                for (int i = 0; i < position; i++) {
-                    View child = backupListView.getChildAt(i);
-                    totalHeight += child.getMeasuredHeight();
-                }
-                int gap = 0;
-                if (totalHeight % ITEM_HEIGHT != 0) {
-                    gap = ITEM_HEIGHT - totalHeight % ITEM_HEIGHT;
-                }
-                Log.e(TAG, totalHeight + "??????????????????" + gap + "," + (itemCount * ITEM_HEIGHT + gap));
-                imageView.getLayoutParams().height = itemCount * ITEM_HEIGHT + gap;
+                editText.setText("" + position);
             }
+            editText.getLayoutParams().height = ITEM_HEIGHT;
+            //                imageView.setVisibility(View.GONE);
+            //                editText.setVisibility(View.VISIBLE);
+            //            } else {
+            //
+            //
+            //                NoteItem noteItem = new NoteItem();
+            //
+            //                int wIndex = item.indexOf("w=");
+            //                int hIndex = item.indexOf("h=");
+            //                int dIndex = item.indexOf("describe=");
+            //                int nIndex = item.indexOf("name=");
+            //
+            //                noteItem.type = 1;
+            //                noteItem.width = Integer.parseInt(item.substring(wIndex + 2, hIndex - 1));
+            //                noteItem.height = Integer.parseInt(item.substring(hIndex + 2, dIndex - 1));
+            //                noteItem.describe = item.substring(dIndex + 9, nIndex - 1);
+            //                noteItem.name = item.substring(nIndex + 5, item.length() - 1);
+            //
+            //                editText.setVisibility(View.GONE);
+            //                imageView.setVisibility(View.VISIBLE);
+            //                imageView.setImageBitmap(FileUtils.getBitmapFromFile(noteItem.name));
+            //                final int itemCount = noteItem.height % ITEM_HEIGHT == 0 ? noteItem.height / ITEM_HEIGHT : noteItem.height / ITEM_HEIGHT + 1;
+            //                int totalHeight = 0;
+            //                for (int i = 0; i < position; i++) {
+            //                    View child = backupListView.getChildAt(i);
+            //                    totalHeight += child.getMeasuredHeight();
+            //                }
+            //                int gap = 0;
+            //                if (totalHeight % ITEM_HEIGHT != 0) {
+            //                    gap = ITEM_HEIGHT - totalHeight % ITEM_HEIGHT;
+            //                }
+            //                final int finalHeight = itemCount * ITEM_HEIGHT + gap;
+            //                Log.e(TAG, totalHeight + "??????????????????" + gap + "," + finalHeight);
+            //                imageView.getLayoutParams().height = finalHeight;
+            //
+            //
+            //
+            //            }
             return convertView;
         }
     }
@@ -371,7 +377,7 @@ public class EditActivity extends AppCompatActivity {
                 convertView = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_list_note_detail, parent, false);
             }
             final TextView editText = (TextView) convertView.findViewById(R.id.et_note_item);
-            ImageView imageView = (ImageView) convertView.findViewById(R.id.iv_img_item);
+            final ImageView imageView = (ImageView) convertView.findViewById(R.id.iv_img_item);
             NoteItem noteItem = data.get(position);
             if (noteItem.type == 0) {
                 editText.setText(noteItem.content);
@@ -412,12 +418,48 @@ public class EditActivity extends AppCompatActivity {
                 if (totalHeight % ITEM_HEIGHT != 0) {
                     gap = ITEM_HEIGHT - totalHeight % ITEM_HEIGHT;
                 }
-                Log.e(TAG, totalHeight + "??????????????????" + gap + "," + (itemCount * ITEM_HEIGHT + gap));
-                imageView.getLayoutParams().height = itemCount * ITEM_HEIGHT + gap;
+                final int finalHeight = itemCount * ITEM_HEIGHT + gap;
+                Log.e(TAG, totalHeight + "??????????????????" + gap + "," + finalHeight);
+                imageView.getLayoutParams().height = finalHeight;
 
                 List<String> lineTextList = new ArrayList();
                 lineTextList.add("<image w=" + noteItem.width + " h=" + noteItem.height + " describe=" + noteItem.describe + " name=" + noteItem.name + ">");
                 lineTextMap.put(position, lineTextList);
+
+                imageView.setOnTouchListener(new View.OnTouchListener() {
+                    @Override public boolean onTouch(View v, MotionEvent event) {
+
+                        ValueAnimator valueAnimator = ValueAnimator.ofInt(finalHeight, ITEM_HEIGHT).setDuration(300);
+                        valueAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+                            @Override public void onAnimationUpdate(ValueAnimator animation) {
+                                int value = (int) animation.getAnimatedValue();
+                                Log.e(TAG, "animation:" + value);
+                                imageView.getLayoutParams().height = value;
+                                imageView.requestLayout();
+                            }
+                        });
+                        valueAnimator.addListener(new Animator.AnimatorListener() {
+                            @Override public void onAnimationStart(Animator animation) {
+
+                            }
+
+                            @Override public void onAnimationEnd(Animator animation) {
+                                draggable = true;
+                                calcBackupText();
+                            }
+
+                            @Override public void onAnimationCancel(Animator animation) {
+
+                            }
+
+                            @Override public void onAnimationRepeat(Animator animation) {
+
+                            }
+                        });
+                        valueAnimator.start();
+                        return true;
+                    }
+                });
             }
             //convertView.setBackgroundDrawable(getDrawable(R.drawable.listview_bg));
             return convertView;
