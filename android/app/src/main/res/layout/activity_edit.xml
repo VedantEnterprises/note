@@ -24,7 +24,9 @@
     <ListView
       android:id="@+id/backgroundListView"
       android:layout_width="match_parent"
-              android:layout_height="match_parent"/>
+      android:divider="@null"
+      android:dividerHeight="0px"
+      android:layout_height="match_parent"/>
 
     <xyz.hanks.note.ui.widget.draglist.DragSortListView
       android:id="@+id/backListView"
@@ -34,23 +36,22 @@
       android:dividerHeight="0px"
       android:padding="3dp"
       android:scrollbars="none"
-      app:collapsed_height="2dp"
-      app:drag_enabled="true"
+      app:collapsed_height="0dp"
+      app:drag_enabled="false"
       app:drag_scroll_start="0.33"
-      app:float_alpha="0.6"
+      app:float_alpha="1"
       app:max_drag_scroll_speed="0.5"
       app:slide_shuffle_speed="0.3"
       app:track_drag_sort="false"
       app:use_default_controller="true"/>
 
-    <com.github.ksoichiro.android.observablescrollview.ObservableListView
+    <com.github.ksoichiro.android.observablescrollview.ObservableRecyclerView
       android:id="@+id/listView"
       android:layout_width="match_parent"
       android:layout_height="match_parent"
       android:divider="@null"
       android:dividerHeight="0px"
-      android:scrollbars="none">
-    </com.github.ksoichiro.android.observablescrollview.ObservableListView>
+      android:scrollbars="none"/>
 
   </FrameLayout>
 
