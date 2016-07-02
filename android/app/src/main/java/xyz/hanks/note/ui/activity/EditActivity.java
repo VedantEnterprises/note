@@ -11,6 +11,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -30,6 +31,7 @@ import com.github.ksoichiro.android.observablescrollview.ObservableScrollViewCal
 import com.github.ksoichiro.android.observablescrollview.ScrollState;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -64,7 +66,7 @@ public class EditActivity extends AppCompatActivity {
     private NoteDetailAdapter noteDetailAdapter;
     private MyBackAdapter backupAdapter;
     private BackgroundAdapter backgroundAdapter;
-    private boolean draggable;
+    private boolean draggable = false;;
     private ListView backgroundListView;
     //    private DragSortListView.DragListener onDrag =
     //            new DragSortListView.DragListener() {
@@ -122,6 +124,8 @@ public class EditActivity extends AppCompatActivity {
         listView.setLayoutManager(new LinearLayoutManager(this));
         noteDetailAdapter = new NoteDetailAdapter();
         listView.setAdapter(noteDetailAdapter);
+        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new NoteItemTouchHelper());
+        itemTouchHelper.attachToRecyclerView(listView);
 
         backgroundListView = (ListView) findViewById(R.id.backgroundListView);
         backgroundAdapter = new BackgroundAdapter();
@@ -169,12 +173,7 @@ public class EditActivity extends AppCompatActivity {
 
     private void calcBackupText() {
         backupData.clear();
-
-        for (Integer integer : lineTextMap.keySet()) {
-            Log.e(TAG, integer + "lineTextMap");
-        }
         for (int i = 0; i < data.size(); i++) {
-
             List<String> strings = lineTextMap.get(i);
             if (data.get(i).type == 0) {// 文字
                 backupData.addAll(strings);
@@ -182,9 +181,10 @@ public class EditActivity extends AppCompatActivity {
                 backupData.add(strings.get(0));
             }
         }
-        listView.setVisibility(View.GONE);
-        backupListView.setVisibility(View.VISIBLE);
-        backupAdapter.notifyDataSetChanged();
+        noteDetailAdapter.notifyDataSetChanged();
+        //        listView.setVisibility(View.GONE);
+        //backupListView.setVisibility(View.VISIBLE);
+        //backupAdapter.notifyDataSetChanged();
     }
 
     @Override public boolean onOptionsItemSelected(MenuItem item) {
@@ -489,101 +489,188 @@ public class EditActivity extends AppCompatActivity {
             rootLayout = itemView.findViewById(R.id.root_layout);
             editText = (LineTextView) itemView.findViewById(R.id.et_note_item);
             imageView = (ImageView) itemView.findViewById(R.id.iv_img_item);
-            imageView.setOnTouchListener(new View.OnTouchListener() {
-                @Override public boolean onTouch(View v, MotionEvent event) {
-                    NoteItem noteItem = data.get(getAdapterPosition());
-                    int itemCount = noteItem.height % ITEM_HEIGHT == 0 ? noteItem.height / ITEM_HEIGHT : noteItem.height / ITEM_HEIGHT + 1;
-                    final int finalHeight = itemCount * ITEM_HEIGHT;
-                    ValueAnimator valueAnimator = ValueAnimator.ofInt(finalHeight, ITEM_HEIGHT).setDuration(300);
-                    valueAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-                        @Override public void onAnimationUpdate(ValueAnimator animation) {
-                            int value = (int) animation.getAnimatedValue();
-                            rootLayout.getLayoutParams().height = value;
-                            rootLayout.requestLayout();
-                        }
-                    });
-                    valueAnimator.addListener(new Animator.AnimatorListener() {
-                        @Override public void onAnimationStart(Animator animation) {
-
-                        }
-
-                        @Override public void onAnimationEnd(Animator animation) {
-                            //draggable = true;
-                            //calcBackupText();
-                        }
-
-                        @Override public void onAnimationCancel(Animator animation) {
-
-                        }
-
-                        @Override public void onAnimationRepeat(Animator animation) {
-
-                        }
-                    });
-                    valueAnimator.start();
-                    return true;
-                }
-            });
+            //            imageView.setOnTouchListener(new View.OnTouchListener() {
+            //                @Override public boolean onTouch(View v, MotionEvent event) {
+            //                    final int currentHeight = rootLayout.getLayoutParams().height;
+            //                    ValueAnimator valueAnimator = ValueAnimator.ofInt(currentHeight,ITEM_HEIGHT).setDuration(300);
+            //                    valueAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            //                        @Override public void onAnimationUpdate(ValueAnimator animation) {
+            //                            int value = (int) animation.getAnimatedValue();
+            //                            rootLayout.getLayoutParams().height = value;
+            //                            rootLayout.requestLayout();
+            //                        }
+            //                    });
+            //                    valueAnimator.addListener(new Animator.AnimatorListener() {
+            //                        @Override public void onAnimationStart(Animator animation) {
+            //
+            //                        }
+            //
+            //                        @Override public void onAnimationEnd(Animator animation) {
+            //                            draggable = true;
+            //                            calcBackupText();
+            //                        }
+            //
+            //                        @Override public void onAnimationCancel(Animator animation) {
+            //
+            //                        }
+            //
+            //                        @Override public void onAnimationRepeat(Animator animation) {
+            //
+            //                        }
+            //                    });
+            //                    valueAnimator.start();
+            //                    return true;
+            //                }
+            //            });
         }
     }
 
-    class NoteDetailAdapter extends RecyclerView.Adapter<NoteDetailViewHolder> {
+    class NoteDetailLineViewHolder extends RecyclerView.ViewHolder {
+
+        public View rootLayout;
+        public TextView editText;
+        public ImageView imageView;
+
+        public NoteDetailLineViewHolder(View itemView) {
+            super(itemView);
+            rootLayout = itemView.findViewById(R.id.root_layout);
+            editText = (TextView) itemView.findViewById(R.id.et_note_item);
+            imageView = (ImageView) itemView.findViewById(R.id.iv_img_item);
+        }
+    }
+
+    class NoteDetailAdapter extends RecyclerView.Adapter {
 
         @Override
-        public NoteDetailViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_list_note_detail, parent, false);
-            return new NoteDetailViewHolder(view);
+        public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            if (viewType == 0) {
+                return new NoteDetailLineViewHolder(LayoutInflater.from(parent.getContext())
+                        .inflate(R.layout.item_list_note_detail_back, parent, false));
+            } else {
+                return new NoteDetailViewHolder(LayoutInflater.from(parent.getContext())
+                        .inflate(R.layout.item_list_note_detail, parent, false));
+            }
         }
 
-        @Override public void onBindViewHolder(final NoteDetailViewHolder holder, final int position) {
+        @Override public int getItemViewType(int position) {
+            return  draggable ? 0: 1;
+        }
+
+        @Override
+        public void onBindViewHolder(final RecyclerView.ViewHolder viewHolder, final int position) {
+            if (draggable) {
+                NoteDetailLineViewHolder holder = (NoteDetailLineViewHolder) viewHolder;
+                holder.rootLayout.getLayoutParams().height = ITEM_HEIGHT;
+                holder.rootLayout.requestLayout();
+                String str = backupData.get(position);
+                if (isImage(str)) {
+                    holder.editText.setVisibility(View.GONE);
+                    holder.imageView.setVisibility(View.VISIBLE);
+                    int wIndex = str.indexOf("w=");
+                    int hIndex = str.indexOf("h=");
+                    int dIndex = str.indexOf("describe=");
+                    int nIndex = str.indexOf("name=");
+                    NoteItem noteItem = new NoteItem();
+                    noteItem.type = 1;
+                    noteItem.width = Integer.parseInt(str.substring(wIndex + 2, hIndex - 1));
+                    noteItem.height = Integer.parseInt(str.substring(hIndex + 2, dIndex - 1));
+                    noteItem.describe = str.substring(dIndex + 9, nIndex - 1);
+                    noteItem.name = str.substring(nIndex + 5, str.length() - 1);
+                    holder.imageView.setImageBitmap(FileUtils.getBitmapFromFile(noteItem.name));
+                    int itemCount = noteItem.height % ITEM_HEIGHT == 0 ? noteItem.height / ITEM_HEIGHT : noteItem.height / ITEM_HEIGHT + 1;
+                    final int finalHeight = itemCount * ITEM_HEIGHT;
+                    Log.e(TAG, "ImageView" + finalHeight);
+                    holder.rootLayout.getLayoutParams().height = finalHeight;
+                    holder.rootLayout.requestLayout();
+                } else {
+                    holder.imageView.setVisibility(View.GONE);
+                    holder.editText.setVisibility(View.VISIBLE);
+                    holder.editText.setText(backupData.get(position));
+                }
+                return;
+            }
+
+            final NoteDetailViewHolder holder = (NoteDetailViewHolder) viewHolder;
             holder.rootLayout.getLayoutParams().height = ITEM_HEIGHT;
             NoteItem noteItem = data.get(position);
             if (noteItem.type == 0) {
-                holder.editText.setText(noteItem.content);
                 holder.imageView.setVisibility(View.GONE);
                 holder.editText.setVisibility(View.VISIBLE);
-                holder.editText.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-                    @Override public void onGlobalLayout() {
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-                            holder.editText.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                        } else {
-                            holder.editText.getViewTreeObserver().removeGlobalOnLayoutListener(this);
+                if (draggable) {
+                } else {
+                    holder.editText.setText(noteItem.content);
+                    holder.editText.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                        @Override public void onGlobalLayout() {
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                                holder.editText.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                            } else {
+                                holder.editText.getViewTreeObserver().removeGlobalOnLayoutListener(this);
+                            }
+                            List<String> lineTextList = new ArrayList();
+                            int lineCount = holder.editText.getLayout().getLineCount();
+                            for (int i = 0; i < lineCount; i++) {
+                                int lineStart = holder.editText.getLayout().getLineStart(i);
+                                int lineEnd = holder.editText.getLayout().getLineEnd(i);
+                                String lineText = holder.editText.getText().subSequence(lineStart, lineEnd).toString();
+                                Log.e(TAG, lineStart + "," + lineEnd + "," + lineText + "," + lineCount);
+                                lineTextList.add(lineText);
+                            }
+                            lineTextMap.put(position, lineTextList);
+                            int finalHeight = ITEM_HEIGHT * lineCount;
+                            Log.e(TAG, "rootLayout" + finalHeight);
+                            holder.rootLayout.getLayoutParams().height = finalHeight;
+                            holder.rootLayout.requestLayout();
                         }
-                        List<String> lineTextList = new ArrayList();
-                        int lineCount = holder.editText.getLayout().getLineCount();
-                        for (int i = 0; i < lineCount; i++) {
-                            int lineStart = holder.editText.getLayout().getLineStart(i);
-                            int lineEnd = holder.editText.getLayout().getLineEnd(i);
-                            String lineText = holder.editText.getText().subSequence(lineStart, lineEnd).toString();
-                            Log.e(TAG, lineStart + "," + lineEnd + "," + lineText + "," + lineCount);
-                            lineTextList.add(lineText);
-                        }
-                        lineTextMap.put(position, lineTextList);
-                        int finalHeight = ITEM_HEIGHT * lineCount;
-                        Log.e(TAG, "rootLayout" + finalHeight);
-                        holder.rootLayout.getLayoutParams().height = finalHeight;
-                        holder.rootLayout.requestLayout();
-                    }
-                });
-            } else if (noteItem.type == 1) {
 
+                    });
+                }
+            } else if (noteItem.type == 1) {
                 holder.editText.setVisibility(View.GONE);
                 holder.imageView.setVisibility(View.VISIBLE);
                 holder.imageView.setImageBitmap(FileUtils.getBitmapFromFile(noteItem.name));
-
                 List<String> lineTextList = new ArrayList();
                 lineTextList.add("<image w=" + noteItem.width + " h=" + noteItem.height + " describe=" + noteItem.describe + " name=" + noteItem.name + ">");
                 lineTextMap.put(position, lineTextList);
-
                 int itemCount = noteItem.height % ITEM_HEIGHT == 0 ? noteItem.height / ITEM_HEIGHT : noteItem.height / ITEM_HEIGHT + 1;
                 final int finalHeight = itemCount * ITEM_HEIGHT;
                 Log.e(TAG, "ImageView" + finalHeight);
                 holder.rootLayout.getLayoutParams().height = finalHeight;
             }
         }
-
         @Override public int getItemCount() {
-            return data.size();
+            return draggable ? backupData.size() : data.size();
+        }
+    }
+
+
+    class NoteItemTouchHelper extends ItemTouchHelper.Callback {
+
+        @Override
+        public int getMovementFlags(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
+            int swipeFlag = 0;
+            int dragFlag = draggable ? ItemTouchHelper.UP | ItemTouchHelper.DOWN : 0;
+            return makeMovementFlags(dragFlag, swipeFlag);
+        }
+
+        @Override
+        public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
+            int fromPosition = viewHolder.getAdapterPosition();
+            int toPosition = target.getAdapterPosition();
+            if (fromPosition < toPosition) {
+                for (int i = fromPosition; i < toPosition; i++) {
+                    Collections.swap(backupData, i, i + 1);
+                }
+            } else {
+                for (int i = fromPosition; i > toPosition; i--) {
+                    Collections.swap(backupData, i, i - 1);
+                }
+            }
+            noteDetailAdapter.notifyItemMoved(fromPosition, toPosition);
+            return true;
+        }
+
+        @Override public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
+
         }
     }
 }

@@ -24,9 +24,9 @@
     <ListView
       android:id="@+id/backgroundListView"
       android:layout_width="match_parent"
+      android:layout_height="match_parent"
       android:divider="@null"
-      android:dividerHeight="0px"
-      android:layout_height="match_parent"/>
+      android:dividerHeight="0px"/>
 
     <xyz.hanks.note.ui.widget.draglist.DragSortListView
       android:id="@+id/backListView"
@@ -36,6 +36,7 @@
       android:dividerHeight="0px"
       android:padding="3dp"
       android:scrollbars="none"
+      android:visibility="gone"
       app:collapsed_height="0dp"
       app:drag_enabled="false"
       app:drag_scroll_start="0.33"
