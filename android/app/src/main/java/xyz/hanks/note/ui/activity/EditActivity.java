@@ -1,7 +1,5 @@
 package xyz.hanks.note.ui.activity;
 
-import android.animation.Animator;
-import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
@@ -17,7 +15,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
@@ -40,8 +37,6 @@ import java.util.regex.Pattern;
 
 import xyz.hanks.note.R;
 import xyz.hanks.note.ui.widget.LineTextView;
-import xyz.hanks.note.ui.widget.draglist.DragSortListView;
-import xyz.hanks.note.util.FileUtils;
 
 /**
  * Edit note Activity
@@ -56,49 +51,18 @@ public class EditActivity extends AppCompatActivity {
     List<NoteItem> data = new ArrayList<>();
     List<String> backupData = new ArrayList<>();
     Map<Integer, List<String>> lineTextMap = new HashMap<>();
-    private ObservableRecyclerView listView;
-    private DragSortListView backupListView;
     private String noteContent = "进来看看还有什么惊喜^_^\n" +
-            "我们支持把便签的文字直接发送到新<image w=858 h=483 describe= name=Note_123.jpg>浪微博，\n" +
+            "我们支持把便签的文字直接发送到新<image w=858 h=483 describe= name=Note_123.jpg>浪微博，\n\n" +
             "同时你再也不用忍受新浪的数字限制了，当文字超过 140 之后，便签会自动生成排版优雅、字体<image w=858 h=223 describe=no one name=Note_453.jpg>精美的图片长微博，希望我们的便签能够让你重新喜欢上不那么碎片的表达。试试点击右上角的小飞机，再点击随后出现的菜单中的 “以图片分享” 将图片分享至你的其他应用。\n" +
             "便签内容现在支持分享至新浪长微博。\n";
-    // private MyAdapter adapter;
     private NoteDetailAdapter noteDetailAdapter;
-    private MyBackAdapter backupAdapter;
     private BackgroundAdapter backgroundAdapter;
-    private boolean draggable = false;;
+
+    private ObservableRecyclerView listView;
     private ListView backgroundListView;
-    //    private DragSortListView.DragListener onDrag =
-    //            new DragSortListView.DragListener() {
-    //                @Override public void drag(int from, int to) {
-    //                    if("[图]".equals(backupData.get(from))){
-    //                        backupListView.setDragEnabled(true);
-    //                    }else {
-    //                        backupListView.setDragEnabled(false);
-    //                    }
-    //                }
-    //            };
-    private DragSortListView.DropListener onDrop =
-            new DragSortListView.DropListener() {
-                @Override
-                public void drop(int from, int to) {
 
-                    String fromItem = backupData.get(from);
-                    String toItem = backupData.get(to);
-                    backupData.set(from, toItem);
-                    backupData.set(to, fromItem);
-                    backupAdapter.notifyDataSetChanged();
+    private boolean draggable = false;
 
-                    StringBuilder sb = new StringBuilder();
-                    for (String s : backupData) {
-                        sb.append(s);
-                    }
-                    noteContent = sb.toString();
-
-                    calcText();
-
-                }
-            };
 
     public static void start(Context context) {
         Intent starter = new Intent(context, EditActivity.class);
@@ -108,7 +72,6 @@ public class EditActivity extends AppCompatActivity {
     @Override protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit);
-
         setupUI();
     }
 
@@ -119,8 +82,6 @@ public class EditActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         listView = (ObservableRecyclerView) findViewById(R.id.listView);
-        // adapter = new MyAdapter();
-        // listView.setAdapter(adapter);
         listView.setLayoutManager(new LinearLayoutManager(this));
         noteDetailAdapter = new NoteDetailAdapter();
         listView.setAdapter(noteDetailAdapter);
@@ -130,23 +91,6 @@ public class EditActivity extends AppCompatActivity {
         backgroundListView = (ListView) findViewById(R.id.backgroundListView);
         backgroundAdapter = new BackgroundAdapter();
         backgroundListView.setAdapter(backgroundAdapter);
-
-        backupListView = (DragSortListView) findViewById(R.id.backListView);
-        backupAdapter = new MyBackAdapter();
-        backupListView.setAdapter(backupAdapter);
-        //        backupListView.setDragListener(onDrag);
-        backupListView.setDropListener(onDrop);
-
-
-        //        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-        //            @Override
-        //            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        //                if (data.get(position).type == 1) {// image
-        //                    draggable = true;
-        //                    calcBackupText();
-        //                }
-        //            }
-        //        });
 
         listView.setScrollViewCallbacks(new ObservableScrollViewCallbacks() {
             @Override
@@ -182,7 +126,7 @@ public class EditActivity extends AppCompatActivity {
             }
         }
         noteDetailAdapter.notifyDataSetChanged();
-        //        listView.setVisibility(View.GONE);
+        //        listView.setVisibility(View.INVISIBLE);
         //backupListView.setVisibility(View.VISIBLE);
         //backupAdapter.notifyDataSetChanged();
     }
@@ -209,8 +153,9 @@ public class EditActivity extends AppCompatActivity {
 
     private void calcText() {
         if (TextUtils.isEmpty(noteContent)) {
-            return;
+            noteContent = "";
         }
+
         Pattern pattern = Pattern.compile(ATT_IMAGE_PATTERN_STRING);
         data.clear();
         String tmp = noteContent;
@@ -257,9 +202,6 @@ public class EditActivity extends AppCompatActivity {
             data.add(noteItem);
         }
         draggable = false;
-        listView.setVisibility(View.VISIBLE);
-        backupListView.setVisibility(View.GONE);
-        // adapter.notifyDataSetChanged();
         noteDetailAdapter.notifyDataSetChanged();
     }
 
@@ -274,6 +216,7 @@ public class EditActivity extends AppCompatActivity {
         int end;
     }
 
+    // 背景
     class BackgroundAdapter extends BaseAdapter {
         @Override public int getCount() {
             return Integer.MAX_VALUE;
@@ -295,246 +238,19 @@ public class EditActivity extends AppCompatActivity {
         }
     }
 
-    class MyBackAdapter extends BaseAdapter {
-        @Override public int getCount() {
-            return backupData.size();
-        }
-
-        @Override public Object getItem(int i) {
-            return null;
-        }
-
-        @Override public long getItemId(int i) {
-            return 0;
-        }
-
-        @Override public View getView(int position, View convertView, ViewGroup parent) {
-            if (convertView == null) {
-                convertView = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_list_note_detail_back, parent, false);
-            }
-            final TextView editText = (TextView) convertView.findViewById(R.id.et_note_item);
-            //            final ImageView imageView = (ImageView) convertView.findViewById(R.id.iv_img_item);
-            //            String item = backupData.get(position);
-            //            if (!isImage(item)) {
-            if (draggable && position < backupData.size()) {
-                editText.setText(backupData.get(position));
-            } else {
-                editText.setText("" + position);
-            }
-            editText.getLayoutParams().height = ITEM_HEIGHT;
-            //                imageView.setVisibility(View.GONE);
-            //                editText.setVisibility(View.VISIBLE);
-            //            } else {
-            //
-            //
-            //                NoteItem noteItem = new NoteItem();
-            //
-            //                int wIndex = item.indexOf("w=");
-            //                int hIndex = item.indexOf("h=");
-            //                int dIndex = item.indexOf("describe=");
-            //                int nIndex = item.indexOf("name=");
-            //
-            //                noteItem.type = 1;
-            //                noteItem.width = Integer.parseInt(item.substring(wIndex + 2, hIndex - 1));
-            //                noteItem.height = Integer.parseInt(item.substring(hIndex + 2, dIndex - 1));
-            //                noteItem.describe = item.substring(dIndex + 9, nIndex - 1);
-            //                noteItem.name = item.substring(nIndex + 5, item.length() - 1);
-            //
-            //                editText.setVisibility(View.GONE);
-            //                imageView.setVisibility(View.VISIBLE);
-            //                imageView.setImageBitmap(FileUtils.getBitmapFromFile(noteItem.name));
-            //                final int itemCount = noteItem.height % ITEM_HEIGHT == 0 ? noteItem.height / ITEM_HEIGHT : noteItem.height / ITEM_HEIGHT + 1;
-            //                int totalHeight = 0;
-            //                for (int i = 0; i < position; i++) {
-            //                    View child = backupListView.getChildAt(i);
-            //                    totalHeight += child.getMeasuredHeight();
-            //                }
-            //                int gap = 0;
-            //                if (totalHeight % ITEM_HEIGHT != 0) {
-            //                    gap = ITEM_HEIGHT - totalHeight % ITEM_HEIGHT;
-            //                }
-            //                final int finalHeight = itemCount * ITEM_HEIGHT + gap;
-            //                Log.e(TAG, totalHeight + "??????????????????" + gap + "," + finalHeight);
-            //                imageView.getLayoutParams().height = finalHeight;
-            //
-            //
-            //
-            //            }
-            return convertView;
-        }
-    }
-
-    class MyAdapter extends BaseAdapter {
-
-        @Override public int getCount() {
-            return data.size();
-        }
-
-        @Override public Object getItem(int position) {
-            return null;
-        }
-
-        @Override public long getItemId(int position) {
-            return 0;
-        }
-
-        @Override public View getView(final int position, View convertView, ViewGroup parent) {
-            if (convertView == null) {
-                convertView = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_list_note_detail, parent, false);
-            }
-            final View rootLayout = convertView.findViewById(R.id.root_layout);
-            final LineTextView editText = (LineTextView) rootLayout.findViewById(R.id.et_note_item);
-            final ImageView imageView = (ImageView) rootLayout.findViewById(R.id.iv_img_item);
-            NoteItem noteItem = data.get(position);
-            if (noteItem.type == 0) {
-                editText.setText(noteItem.content);
-                imageView.setVisibility(View.GONE);
-                editText.setVisibility(View.VISIBLE);
-                editText.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-                    @Override public void onGlobalLayout() {
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-                            editText.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                        } else {
-                            editText.getViewTreeObserver().removeGlobalOnLayoutListener(this);
-                        }
-                        List<String> lineTextList = new ArrayList();
-                        int lineCount = editText.getLayout().getLineCount();
-                        for (int i = 0; i < lineCount; i++) {
-                            int lineStart = editText.getLayout().getLineStart(i);
-                            int lineEnd = editText.getLayout().getLineEnd(i);
-                            String lineText = editText.getText().subSequence(lineStart, lineEnd).toString();
-                            Log.e(TAG, lineStart + "," + lineEnd + "," + lineText + "," + lineCount);
-                            lineTextList.add(lineText);
-                        }
-                        lineTextMap.put(position, lineTextList);
-                        int finalHeight = ITEM_HEIGHT * lineCount;
-                        Log.e(TAG, "rootLayout" + finalHeight);
-                        rootLayout.getLayoutParams().height = finalHeight;
-                        rootLayout.requestLayout();
-                    }
-                });
-            } else if (noteItem.type == 1) {
-
-                editText.setVisibility(View.GONE);
-                imageView.setVisibility(View.VISIBLE);
-                imageView.setImageBitmap(FileUtils.getBitmapFromFile(noteItem.name));
-                int itemCount = noteItem.height % ITEM_HEIGHT == 0 ? noteItem.height / ITEM_HEIGHT : noteItem.height / ITEM_HEIGHT + 1;
-
-                //                int totalHeight = 0;
-                //                for (int i = 0; i < position; i++) {
-                //                    View child = listView.getChildAt(i);
-                //                    totalHeight += child.getMeasuredHeight();
-                //                }
-                //                int gap = 0;
-                //                if (totalHeight % ITEM_HEIGHT != 0) {
-                //                    gap = ITEM_HEIGHT - totalHeight % ITEM_HEIGHT;
-                //                }
-                final int finalHeight = itemCount * ITEM_HEIGHT;
-                Log.e(TAG, "ImageView" + finalHeight);
-                //                Log.e(TAG, totalHeight + "??????????????????" + gap + "," + finalHeight);
-                rootLayout.getLayoutParams().height = finalHeight;
-                rootLayout.requestLayout();
-
-                List<String> lineTextList = new ArrayList();
-                lineTextList.add("<image w=" + noteItem.width + " h=" + noteItem.height + " describe=" + noteItem.describe + " name=" + noteItem.name + ">");
-                lineTextMap.put(position, lineTextList);
-
-                imageView.setOnTouchListener(new View.OnTouchListener() {
-                    @Override public boolean onTouch(View v, MotionEvent event) {
-
-                        ValueAnimator valueAnimator = ValueAnimator.ofInt(finalHeight, ITEM_HEIGHT).setDuration(300);
-                        valueAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-                            @Override public void onAnimationUpdate(ValueAnimator animation) {
-                                int value = (int) animation.getAnimatedValue();
-                                Log.e(TAG, "animation:" + value);
-                                imageView.getLayoutParams().height = value;
-                                imageView.requestLayout();
-                            }
-                        });
-                        valueAnimator.addListener(new Animator.AnimatorListener() {
-                            @Override public void onAnimationStart(Animator animation) {
-
-                            }
-
-                            @Override public void onAnimationEnd(Animator animation) {
-                                draggable = true;
-                                calcBackupText();
-                            }
-
-                            @Override public void onAnimationCancel(Animator animation) {
-
-                            }
-
-                            @Override public void onAnimationRepeat(Animator animation) {
-
-                            }
-                        });
-                        valueAnimator.start();
-                        return true;
-                    }
-                });
-            }
-            //convertView.setBackgroundDrawable(getDrawable(R.drawable.listview_bg));
-            return convertView;
-        }
-    }
-
     class NoteDetailViewHolder extends RecyclerView.ViewHolder {
         public ImageView imageView;
         public LineTextView editText;
+        public TextView tv_line;
         public View rootLayout;
+        public View imgLayout;
 
         public NoteDetailViewHolder(View itemView) {
             super(itemView);
             rootLayout = itemView.findViewById(R.id.root_layout);
+            imgLayout = itemView.findViewById(R.id.layout_img);
             editText = (LineTextView) itemView.findViewById(R.id.et_note_item);
-            imageView = (ImageView) itemView.findViewById(R.id.iv_img_item);
-            //            imageView.setOnTouchListener(new View.OnTouchListener() {
-            //                @Override public boolean onTouch(View v, MotionEvent event) {
-            //                    final int currentHeight = rootLayout.getLayoutParams().height;
-            //                    ValueAnimator valueAnimator = ValueAnimator.ofInt(currentHeight,ITEM_HEIGHT).setDuration(300);
-            //                    valueAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-            //                        @Override public void onAnimationUpdate(ValueAnimator animation) {
-            //                            int value = (int) animation.getAnimatedValue();
-            //                            rootLayout.getLayoutParams().height = value;
-            //                            rootLayout.requestLayout();
-            //                        }
-            //                    });
-            //                    valueAnimator.addListener(new Animator.AnimatorListener() {
-            //                        @Override public void onAnimationStart(Animator animation) {
-            //
-            //                        }
-            //
-            //                        @Override public void onAnimationEnd(Animator animation) {
-            //                            draggable = true;
-            //                            calcBackupText();
-            //                        }
-            //
-            //                        @Override public void onAnimationCancel(Animator animation) {
-            //
-            //                        }
-            //
-            //                        @Override public void onAnimationRepeat(Animator animation) {
-            //
-            //                        }
-            //                    });
-            //                    valueAnimator.start();
-            //                    return true;
-            //                }
-            //            });
-        }
-    }
-
-    class NoteDetailLineViewHolder extends RecyclerView.ViewHolder {
-
-        public View rootLayout;
-        public TextView editText;
-        public ImageView imageView;
-
-        public NoteDetailLineViewHolder(View itemView) {
-            super(itemView);
-            rootLayout = itemView.findViewById(R.id.root_layout);
-            editText = (TextView) itemView.findViewById(R.id.et_note_item);
+            tv_line = (TextView) itemView.findViewById(R.id.tv_line);
             imageView = (ImageView) itemView.findViewById(R.id.iv_img_item);
         }
     }
@@ -543,28 +259,19 @@ public class EditActivity extends AppCompatActivity {
 
         @Override
         public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            if (viewType == 0) {
-                return new NoteDetailLineViewHolder(LayoutInflater.from(parent.getContext())
-                        .inflate(R.layout.item_list_note_detail_back, parent, false));
-            } else {
-                return new NoteDetailViewHolder(LayoutInflater.from(parent.getContext())
-                        .inflate(R.layout.item_list_note_detail, parent, false));
-            }
-        }
-
-        @Override public int getItemViewType(int position) {
-            return  draggable ? 0: 1;
+            return new NoteDetailViewHolder(LayoutInflater.from(parent.getContext())
+                    .inflate(R.layout.item_list_note_detail, parent, false));
         }
 
         @Override
         public void onBindViewHolder(final RecyclerView.ViewHolder viewHolder, final int position) {
+            final NoteDetailViewHolder holder = (NoteDetailViewHolder) viewHolder;
+            holder.rootLayout.getLayoutParams().height = ITEM_HEIGHT;
             if (draggable) {
-                NoteDetailLineViewHolder holder = (NoteDetailLineViewHolder) viewHolder;
-                holder.rootLayout.getLayoutParams().height = ITEM_HEIGHT;
-                holder.rootLayout.requestLayout();
                 String str = backupData.get(position);
+                holder.editText.setVisibility(View.INVISIBLE);
                 if (isImage(str)) {
-                    holder.editText.setVisibility(View.GONE);
+                    holder.tv_line.setVisibility(View.INVISIBLE);
                     holder.imageView.setVisibility(View.VISIBLE);
                     int wIndex = str.indexOf("w=");
                     int hIndex = str.indexOf("h=");
@@ -576,25 +283,25 @@ public class EditActivity extends AppCompatActivity {
                     noteItem.height = Integer.parseInt(str.substring(hIndex + 2, dIndex - 1));
                     noteItem.describe = str.substring(dIndex + 9, nIndex - 1);
                     noteItem.name = str.substring(nIndex + 5, str.length() - 1);
-                    holder.imageView.setImageBitmap(FileUtils.getBitmapFromFile(noteItem.name));
+                    //holder.imageView.setImageBitmap(FileUtils.getBitmapFromFile(noteItem.name));
                     int itemCount = noteItem.height % ITEM_HEIGHT == 0 ? noteItem.height / ITEM_HEIGHT : noteItem.height / ITEM_HEIGHT + 1;
                     final int finalHeight = itemCount * ITEM_HEIGHT;
                     Log.e(TAG, "ImageView" + finalHeight);
                     holder.rootLayout.getLayoutParams().height = finalHeight;
                     holder.rootLayout.requestLayout();
                 } else {
-                    holder.imageView.setVisibility(View.GONE);
-                    holder.editText.setVisibility(View.VISIBLE);
-                    holder.editText.setText(backupData.get(position));
+                    holder.imageView.setVisibility(View.INVISIBLE);
+                    holder.tv_line.setVisibility(View.VISIBLE);
+                    holder.tv_line.setText(str);
                 }
                 return;
             }
 
-            final NoteDetailViewHolder holder = (NoteDetailViewHolder) viewHolder;
-            holder.rootLayout.getLayoutParams().height = ITEM_HEIGHT;
+            holder.tv_line.setVisibility(View.VISIBLE);
+            holder.tv_line.setText("this is :" + position);
             NoteItem noteItem = data.get(position);
             if (noteItem.type == 0) {
-                holder.imageView.setVisibility(View.GONE);
+                holder.imageView.setVisibility(View.INVISIBLE);
                 holder.editText.setVisibility(View.VISIBLE);
                 if (draggable) {
                 } else {
@@ -625,9 +332,9 @@ public class EditActivity extends AppCompatActivity {
                     });
                 }
             } else if (noteItem.type == 1) {
-                holder.editText.setVisibility(View.GONE);
+                holder.editText.setVisibility(View.INVISIBLE);
                 holder.imageView.setVisibility(View.VISIBLE);
-                holder.imageView.setImageBitmap(FileUtils.getBitmapFromFile(noteItem.name));
+                //holder.imageView.setImageBitmap(FileUtils.getBitmapFromFile(noteItem.name));
                 List<String> lineTextList = new ArrayList();
                 lineTextList.add("<image w=" + noteItem.width + " h=" + noteItem.height + " describe=" + noteItem.describe + " name=" + noteItem.name + ">");
                 lineTextMap.put(position, lineTextList);
@@ -637,11 +344,11 @@ public class EditActivity extends AppCompatActivity {
                 holder.rootLayout.getLayoutParams().height = finalHeight;
             }
         }
+
         @Override public int getItemCount() {
             return draggable ? backupData.size() : data.size();
         }
     }
-
 
     class NoteItemTouchHelper extends ItemTouchHelper.Callback {
 

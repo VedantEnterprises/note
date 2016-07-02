@@ -1,23 +1,49 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:id="@+id/root_layout"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:id="@+id/root_layout"
                 android:orientation="vertical">
+  <RelativeLayout
+    android:id="@+id/layout_img"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="12dp"
+    android:paddingLeft="30dp"
+    android:paddingRight="12dp"
+    android:paddingTop="12dp">
     <ImageView
-        android:id="@+id/iv_img_item"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:scaleType="centerCrop"
-        android:background="#fff"
-        android:visibility="gone"/>
+      android:src="@drawable/wall"
+      android:id="@+id/iv_img_item"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:background="#fff"
+      android:scaleType="centerCrop"
+      android:visibility="visible"/>
+    <View android:layout_width="40dp"
+          android:layout_height="40dp"
+          android:layout_alignParentRight="true"
+          android:background="#2333"/>
+  </RelativeLayout>
+  <TextView
+    android:id="@+id/tv_line"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#20f0"
+    android:gravity="center_vertical"
+    android:paddingLeft="30dp"
+    android:paddingRight="12dp"
+    android:textColor="@color/textColor1"
+    android:textSize="16dp"
+    android:visibility="invisible"/>
 
-    <xyz.hanks.note.ui.widget.LineTextView
-        android:paddingLeft="30dp"
-        android:paddingRight="12dp"
-        android:id="@+id/et_note_item"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:textColor="@color/textColor1"
-        android:textSize="16dp"/>
+  <xyz.hanks.note.ui.widget.LineTextView
+    android:id="@+id/et_note_item"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#2f00"
+    android:paddingLeft="30dp"
+    android:paddingRight="12dp"
+    android:textColor="@color/textColor1"
+    android:textSize="16dp"/>
 </RelativeLayout>
