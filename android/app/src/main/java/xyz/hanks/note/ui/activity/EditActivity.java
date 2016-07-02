@@ -62,6 +62,8 @@ public class EditActivity extends AppCompatActivity {
     private ListView backgroundListView;
 
     private boolean draggable = false;
+    private int lastScrollY = 0;
+    private LinearLayoutManager layoutManager;
 
 
     public static void start(Context context) {
@@ -82,9 +84,15 @@ public class EditActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         listView = (ObservableRecyclerView) findViewById(R.id.listView);
-        listView.setLayoutManager(new LinearLayoutManager(this));
+        layoutManager = new LinearLayoutManager(this);
+        listView.setLayoutManager(layoutManager);
+
+        listView.setItemAnimator(null);
         noteDetailAdapter = new NoteDetailAdapter();
         listView.setAdapter(noteDetailAdapter);
+
+        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new NoteItemTouchHelper());
+        itemTouchHelper.attachToRecyclerView(listView);
 
         backgroundListView = (ListView) findViewById(R.id.backgroundListView);
         backgroundAdapter = new BackgroundAdapter();
@@ -94,9 +102,8 @@ public class EditActivity extends AppCompatActivity {
             @Override
             public void onScrollChanged(int scrollY, boolean firstScroll, boolean dragging) {
                 Log.e(TAG, "onScrollChanged=" + scrollY);
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    backgroundListView.setSelectionFromTop(0, -scrollY);
-                }
+                backgroundListView.setSelectionFromTop(0, -scrollY);
+                lastScrollY = -scrollY;
             }
 
             @Override public void onDownMotionEvent() {
@@ -123,10 +130,9 @@ public class EditActivity extends AppCompatActivity {
                 backupData.add(strings.get(0));
             }
         }
-        noteDetailAdapter.notifyDataSetChanged();
-        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new NoteItemTouchHelper());
-        itemTouchHelper.attachToRecyclerView(listView);
-
+        noteDetailAdapter.notifyItemRangeChanged(0,backupData.size());
+        //listView.scrollVerticallyTo(lastScrollY);
+        layoutManager.scrollToPositionWithOffset(0,lastScrollY);
         //        listView.setVisibility(View.INVISIBLE);
         //backupListView.setVisibility(View.VISIBLE);
         //backupAdapter.notifyDataSetChanged();
