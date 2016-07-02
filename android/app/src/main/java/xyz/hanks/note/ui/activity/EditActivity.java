@@ -85,8 +85,6 @@ public class EditActivity extends AppCompatActivity {
         listView.setLayoutManager(new LinearLayoutManager(this));
         noteDetailAdapter = new NoteDetailAdapter();
         listView.setAdapter(noteDetailAdapter);
-        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new NoteItemTouchHelper());
-        itemTouchHelper.attachToRecyclerView(listView);
 
         backgroundListView = (ListView) findViewById(R.id.backgroundListView);
         backgroundAdapter = new BackgroundAdapter();
@@ -126,6 +124,9 @@ public class EditActivity extends AppCompatActivity {
             }
         }
         noteDetailAdapter.notifyDataSetChanged();
+        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new NoteItemTouchHelper());
+        itemTouchHelper.attachToRecyclerView(listView);
+
         //        listView.setVisibility(View.INVISIBLE);
         //backupListView.setVisibility(View.VISIBLE);
         //backupAdapter.notifyDataSetChanged();
@@ -268,7 +269,7 @@ public class EditActivity extends AppCompatActivity {
             final NoteDetailViewHolder holder = (NoteDetailViewHolder) viewHolder;
             holder.rootLayout.getLayoutParams().height = ITEM_HEIGHT;
             if (draggable) {
-                String str = backupData.get(position);
+                String str = backupData.get(position).trim();
                 holder.editText.setVisibility(View.INVISIBLE);
                 if (isImage(str)) {
                     holder.tv_line.setVisibility(View.INVISIBLE);
@@ -297,8 +298,7 @@ public class EditActivity extends AppCompatActivity {
                 return;
             }
 
-            holder.tv_line.setVisibility(View.VISIBLE);
-            holder.tv_line.setText("this is :" + position);
+            holder.tv_line.setVisibility(View.INVISIBLE);
             NoteItem noteItem = data.get(position);
             if (noteItem.type == 0) {
                 holder.imageView.setVisibility(View.INVISIBLE);
