@@ -26,6 +26,11 @@ public class LineTextView extends TextView {
         super(context, attrs, defStyleAttr);
     }
 
+    @Override protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        reLayout = false;
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+    }
+
     @Override protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
         if (!reLayout) {

@@ -14,8 +14,7 @@
     android:fitsSystemWindows="true"
     android:minHeight="?attr/actionBarSize"
     app:subtitleTextAppearance="@style/ToolbarSubtitleAppearance"
-    app:theme="@style/ThemeOverlay.AppCompat.Dark"
-    app:titleTextAppearance="@style/ToolbarTitleAppearance"/>
+    app:theme="@style/ThemeOverlay.AppCompat.Dark"/>
   <android.support.v4.widget.SwipeRefreshLayout
     android:layout_width="match_parent"
     android:layout_height="match_parent">
