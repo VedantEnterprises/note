@@ -117,6 +117,18 @@ public class EditActivity extends AppCompatActivity {
             }
         });
         calcText();
+
+//        final View activityRootView = findViewById(R.id.activityRoot);
+//        activityRootView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+//            @Override
+//            public void onGlobalLayout() {
+//                int heightDiff = activityRootView.getRootView().getHeight() - activityRootView.getHeight();
+//                if (heightDiff > ScreenUtils.dpToPx(200)) { // if more than 200 dp, it's probably a keyboard...
+//                    // hide
+//
+//                }
+//            }
+//        });
     }
 
     private boolean isImage(String str) {
@@ -209,6 +221,7 @@ public class EditActivity extends AppCompatActivity {
         getMenuInflater().inflate(R.menu.menu_edit, menu);
         return super.onCreateOptionsMenu(menu);
     }
+
 
     private void changeToDragMode() {
         draggable = true;
