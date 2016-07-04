@@ -11,6 +11,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.support.v7.widget.helper.ItemTouchHelper;
+import android.text.Editable;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -39,6 +40,7 @@ import java.util.regex.Pattern;
 import xyz.hanks.note.R;
 import xyz.hanks.note.ui.viewholder.NoteDetailTextViewHolder;
 import xyz.hanks.note.ui.viewholder.NoteDetailViewHolder;
+import xyz.hanks.note.ui.widget.LineTextView;
 
 /**
  * Edit note Activity
@@ -56,7 +58,7 @@ public class EditActivity extends AppCompatActivity {
     private String noteContent = "进来看看还有什么惊喜^_^\n" +
             "我们支持把便签的文字直接发送到新<image w=858 h=483 describe= name=Note_123.jpg>浪微博，\n\n" +
             "同时你再也不用忍受新浪的数字限制了，当文字超过 140 之后，便签会自动生成排版优雅、字体<image w=858 h=223 describe=no one name=Note_453.jpg>精美的图片长微博，希望我们的便签能够让你重新喜欢上不那么碎片的表达。试试点击右上角的小飞机，再点击随后出现的菜单中的 “以图片分享” 将图片分享至你的其他应用。\n" +
-            "便签内容现在支持分享至新浪长微博。\n";
+            "便签内容现在支持分享至新浪长微博同时你再也不用忍受新浪的数字限制了，当文字超过 140 之后，便签同<image w=858 h=383 describe= name=Note_123.jpg>时你再也不用忍受新浪的数字限制了，当文字超过 140 之后，便签同时你再也不用忍受新浪的数字限制了，当文字超过 140 之后，便签。\n";
     private NoteDetailAdapter noteDetailAdapter;
     private BackgroundAdapter backgroundAdapter;
 
@@ -172,7 +174,7 @@ public class EditActivity extends AppCompatActivity {
             data.add(noteItem);
         }
         noteDetailAdapter.notifyItemRangeChanged(0, data.size());
-        //layoutManager.scrollToPositionWithOffset(0, lastScrollY);
+        layoutManager.scrollToPositionWithOffset(0, lastScrollY);
     }
 
     private void calcBackupText() {
@@ -275,7 +277,26 @@ public class EditActivity extends AppCompatActivity {
             if (viewType == 0) { // drag
                 return NoteDetailViewHolder.newInstance(parent);
             } else if (viewType == 1) { // lineTextView
-                return NoteDetailTextViewHolder.newInstance(parent);
+                final NoteDetailTextViewHolder detailTextViewHolder = NoteDetailTextViewHolder.newInstance(parent);
+                detailTextViewHolder.lineTextView.addTextWatcher(new LineTextView.TextWatcher() {
+                    @Override
+                    public void beforeTextChanged(CharSequence var1, int var2, int var3, int var4) {
+                    }
+
+                    @Override
+                    public void onTextChanged(CharSequence var1, int var2, int var3, int var4) {
+                        int adapterPosition = detailTextViewHolder.getAdapterPosition();
+                        NoteItem noteItem = data.get(adapterPosition);
+                        noteItem.content = var1.toString();
+                        calcContentString();
+
+                    }
+
+                    @Override public void afterTextChanged(Editable var1) {
+
+                    }
+                });
+                return detailTextViewHolder;
             } else {
                 NoteDetailViewHolder noteDetailViewHolder = NoteDetailViewHolder.newInstance(parent);
                 noteDetailViewHolder.setListener(new NoteDetailViewHolder.OnImageHandleTouchListener() {
@@ -383,6 +404,18 @@ public class EditActivity extends AppCompatActivity {
             noteContent = sb.toString();
             changeToNormalMode();
         }
+    }
+
+    private void calcContentString() {
+        StringBuilder sb = new StringBuilder();
+        for (NoteItem noteItem : data) {
+            if(noteItem.type == 0){
+                sb.append(noteItem.content);
+            }else {
+                sb.append(String.format(ATT_IAMGE_TAG,noteItem.width,noteItem.height,noteItem.describe,noteItem.name));
+            }
+        }
+        noteContent = sb.toString();
     }
 
     class NoteItemTouchHelper extends ItemTouchHelper.Callback {

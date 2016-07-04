@@ -4,7 +4,6 @@ package xyz.hanks.note.ui.widget;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.Gravity;
@@ -18,6 +17,7 @@ public class LineTextView extends EditText {
 
     private static final float ITEM_HEIGHT = 125;
     boolean reLayout = false;
+    TextWatcher textWatcher;
 
     public LineTextView(Context context) {
         super(context);
@@ -27,13 +27,17 @@ public class LineTextView extends EditText {
         super(context, attrs);
     }
 
+
     public LineTextView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
 
-        addTextChangedListener(new TextWatcher() {
+        addTextChangedListener(new android.text.TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 
+                if (textWatcher != null) {
+                    textWatcher.beforeTextChanged(charSequence, i, i1, i2);
+                }
             }
 
             @Override public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
@@ -43,15 +47,19 @@ public class LineTextView extends EditText {
                 setLineSpacing(add, mul);
                 setIncludeFontPadding(false);
                 setGravity(Gravity.CENTER_VERTICAL);
-                setPadding(getPaddingLeft(), (int) ((ITEM_HEIGHT - getTextSize()) * 0.5f), getPaddingRight(), getPaddingBottom());
+                //setPadding(getPaddingLeft(), (int) ((ITEM_HEIGHT - getTextSize()) * 0.5f), getPaddingRight(), getPaddingBottom());
+                if (textWatcher != null) {
+                    textWatcher.onTextChanged(charSequence, i, i1, i2);
+                }
             }
 
             @Override public void afterTextChanged(Editable editable) {
-
+                if (textWatcher != null) {
+                    textWatcher.afterTextChanged(editable);
+                }
             }
         });
     }
-
 
     @Override protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
@@ -60,11 +68,24 @@ public class LineTextView extends EditText {
             float add = ITEM_HEIGHT;
             setIncludeFontPadding(false);
             setGravity(Gravity.CENTER_VERTICAL);
-            Log.e("........","onDraw:"+add);
+            Log.e("........", "onDraw:" + add);
             setLineSpacing(add, 0);
-            setPadding(getPaddingLeft(), (int) ((add - getTextSize()) * 0.5f), getPaddingRight(), getPaddingBottom());
+            int top = (int) ((add - getTextSize()) * 0.5f);
+            setPadding(getPaddingLeft(), top, getPaddingRight(), -top);
             requestLayout();
             invalidate();
         }
+    }
+
+    public void addTextWatcher(TextWatcher textWatcher) {
+        this.textWatcher = textWatcher;
+    }
+
+    public interface TextWatcher {
+        void beforeTextChanged(CharSequence var1, int var2, int var3, int var4);
+
+        void onTextChanged(CharSequence var1, int var2, int var3, int var4);
+
+        void afterTextChanged(Editable var1);
     }
 }
