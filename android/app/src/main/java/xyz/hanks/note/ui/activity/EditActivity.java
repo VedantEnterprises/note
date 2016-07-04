@@ -48,7 +48,7 @@ import xyz.hanks.note.ui.widget.LineTextView;
  */
 public class EditActivity extends AppCompatActivity {
 
-    public static final String ATT_IAMGE_TAG = "<image w=%s h=%s describe=%s name=%s>";
+    public static final String ATT_IMAGE_TAG = "<image w=%s h=%s describe=%s name=%s>";
     public static final String ATT_IMAGE_PATTERN_STRING = "<image w=.*? h=.*? describe=.*? name=.*?>";
     private static final String TAG = "........";
     private final int ITEM_HEIGHT = 125;
@@ -117,6 +117,18 @@ public class EditActivity extends AppCompatActivity {
             }
         });
         calcText();
+
+//        final View activityRootView = findViewById(R.id.activityRoot);
+//        activityRootView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+//            @Override
+//            public void onGlobalLayout() {
+//                int heightDiff = activityRootView.getRootView().getHeight() - activityRootView.getHeight();
+//                if (heightDiff > ScreenUtils.dpToPx(200)) { // if more than 200 dp, it's probably a keyboard...
+//                    // hide
+//
+//                }
+//            }
+//        });
     }
 
     private boolean isImage(String str) {
@@ -209,6 +221,7 @@ public class EditActivity extends AppCompatActivity {
         getMenuInflater().inflate(R.menu.menu_edit, menu);
         return super.onCreateOptionsMenu(menu);
     }
+
 
     private void changeToDragMode() {
         draggable = true;
@@ -412,7 +425,7 @@ public class EditActivity extends AppCompatActivity {
             if(noteItem.type == 0){
                 sb.append(noteItem.content);
             }else {
-                sb.append(String.format(ATT_IAMGE_TAG,noteItem.width,noteItem.height,noteItem.describe,noteItem.name));
+                sb.append(String.format(ATT_IMAGE_TAG,noteItem.width,noteItem.height,noteItem.describe,noteItem.name));
             }
         }
         noteContent = sb.toString();
