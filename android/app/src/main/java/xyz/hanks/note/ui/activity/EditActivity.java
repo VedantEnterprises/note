@@ -190,6 +190,7 @@ public class EditActivity extends AppCompatActivity {
     }
 
     private void calcBackupText() {
+
         backupData.clear();
         for (int i = 0; i < data.size(); i++) {
             List<String> strings = lineTextMap.get(i);
