@@ -118,17 +118,17 @@ public class EditActivity extends AppCompatActivity {
         });
         calcText();
 
-//        final View activityRootView = findViewById(R.id.activityRoot);
-//        activityRootView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-//            @Override
-//            public void onGlobalLayout() {
-//                int heightDiff = activityRootView.getRootView().getHeight() - activityRootView.getHeight();
-//                if (heightDiff > ScreenUtils.dpToPx(200)) { // if more than 200 dp, it's probably a keyboard...
-//                    // hide
-//
-//                }
-//            }
-//        });
+        //        final View activityRootView = findViewById(R.id.activityRoot);
+        //        activityRootView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+        //            @Override
+        //            public void onGlobalLayout() {
+        //                int heightDiff = activityRootView.getRootView().getHeight() - activityRootView.getHeight();
+        //                if (heightDiff > ScreenUtils.dpToPx(200)) { // if more than 200 dp, it's probably a keyboard...
+        //                    // hide
+        //
+        //                }
+        //            }
+        //        });
     }
 
     private boolean isImage(String str) {
@@ -210,7 +210,7 @@ public class EditActivity extends AppCompatActivity {
                 finish();
                 break;
             case R.id.menu_edit:
-                changeToDragMode();
+                PreviewActivity.start(this);
                 break;
         }
 
@@ -246,6 +246,18 @@ public class EditActivity extends AppCompatActivity {
         noteItem.describe = str.substring(dIndex + 9, nIndex - 1);
         noteItem.name = str.substring(nIndex + 5, str.length() - 1);
         return noteItem;
+    }
+
+    private void calcContentString() {
+        StringBuilder sb = new StringBuilder();
+        for (NoteItem noteItem : data) {
+            if (noteItem.type == 0) {
+                sb.append(noteItem.content);
+            } else {
+                sb.append(String.format(ATT_IMAGE_TAG, noteItem.width, noteItem.height, noteItem.describe, noteItem.name));
+            }
+        }
+        noteContent = sb.toString();
     }
 
     class NoteItem {
@@ -315,7 +327,7 @@ public class EditActivity extends AppCompatActivity {
                 NoteDetailViewHolder noteDetailViewHolder = NoteDetailViewHolder.newInstance(parent);
                 noteDetailViewHolder.setListener(new NoteDetailViewHolder.OnImageHandleTouchListener() {
                     @Override public boolean onTouch(View view, MotionEvent motionEvent) {
-                        if(motionEvent.getAction() == MotionEvent.ACTION_DOWN){
+                        if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
                             changeToDragMode();
                         }
                         return false;
@@ -418,18 +430,6 @@ public class EditActivity extends AppCompatActivity {
             noteContent = sb.toString();
             changeToNormalMode();
         }
-    }
-
-    private void calcContentString() {
-        StringBuilder sb = new StringBuilder();
-        for (NoteItem noteItem : data) {
-            if(noteItem.type == 0){
-                sb.append(noteItem.content);
-            }else {
-                sb.append(String.format(ATT_IMAGE_TAG,noteItem.width,noteItem.height,noteItem.describe,noteItem.name));
-            }
-        }
-        noteContent = sb.toString();
     }
 
     class NoteItemTouchHelper extends ItemTouchHelper.Callback {

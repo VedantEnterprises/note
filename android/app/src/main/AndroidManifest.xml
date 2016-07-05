@@ -17,6 +17,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".ui.activity.EditActivity" android:windowSoftInputMode="adjustResize"/>
+        <activity android:name=".ui.activity.PreviewActivity" android:windowSoftInputMode="adjustResize"/>
     </application>
 
 </manifest>
