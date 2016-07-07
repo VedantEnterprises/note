@@ -65,7 +65,7 @@ public class NoteApp extends Application {
                     noteItem.deleted = false;
                     noteItem.markdown = false;
                     noteItem.favorite = false;
-                    noteItem.folder_id = 0;
+                    noteItem.folderId = 0;
                     noteItem.positionInFolder = i;
                     realm.copyToRealmOrUpdate(noteItem);
                 }

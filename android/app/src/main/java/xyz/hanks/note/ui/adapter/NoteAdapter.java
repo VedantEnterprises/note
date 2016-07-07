@@ -7,13 +7,27 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.util.List;
+
 import xyz.hanks.note.R;
+import xyz.hanks.note.model.NoteItem;
 import xyz.hanks.note.ui.activity.EditActivity;
 
 /**
  * Created by hanks on 16/6/22.
  */
 public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.NoteItemViewHolder> {
+
+    private List<NoteItem> data;
+
+    private NoteAdapter(List<NoteItem> data) {
+        this.data = data;
+    }
+
+    public static NoteAdapter newInstance(List<NoteItem> data) {
+        return new NoteAdapter(data);
+    }
+
     @Override public NoteItemViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_list_note, parent, false);
         return new NoteItemViewHolder(view);
@@ -21,13 +35,14 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.NoteItemViewHo
 
     @Override public void onBindViewHolder(NoteItemViewHolder holder, int position) {
         // holder.cbFavorite.setChecked(true);
-        holder.ivImage.setVisibility(View.VISIBLE);
-        holder.tvModifyTime.setText("昨天 12:45");
-        holder.tvNoteDetail.setText("点击进来看看还有什么惊喜");
+        NoteItem item = data.get(position);
+        holder.ivImage.setVisibility(View.GONE);
+        holder.tvModifyTime.setText(item.updatedAt + "");
+        holder.tvNoteDetail.setText(item.title);
     }
 
     @Override public int getItemCount() {
-        return 10;
+        return data == null ? 0 : data.size();
     }
 
     class NoteItemViewHolder extends RecyclerView.ViewHolder {
@@ -41,7 +56,7 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.NoteItemViewHo
             super(itemView);
             tvModifyTime = (TextView) itemView.findViewById(R.id.tv_modify_time);
             tvNoteDetail = (TextView) itemView.findViewById(R.id.tv_note_detail);
-            cbFavorite =  itemView.findViewById(R.id.cb_favorite);
+            cbFavorite = itemView.findViewById(R.id.cb_favorite);
             ivImage = (ImageView) itemView.findViewById(R.id.iv_img);
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override public void onClick(View v) {

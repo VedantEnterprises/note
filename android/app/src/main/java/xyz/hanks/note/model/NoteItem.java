@@ -10,6 +10,9 @@ import io.realm.annotations.RealmClass;
  */
 @RealmClass
 public class NoteItem implements RealmModel {
+
+    public static final String UPDATED_AT = "updatedAt";
+
     @PrimaryKey
     public int objectId;
     public long createdAt;
@@ -19,8 +22,6 @@ public class NoteItem implements RealmModel {
     public boolean markdown;
     public String title;
     public String detail;
-    public String thumb_pic;
-    public String note_content_md5;
     public int positionInFolder;
-    public int folder_id;
+    public int folderId;
 }
