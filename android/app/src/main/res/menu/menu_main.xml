@@ -2,13 +2,9 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
       xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
-        android:id="@+id/menu_del"
+        android:id="@+id/menu_search"
         android:orderInCategory="90"
         app:showAsAction="ifRoom"
-        android:title="删除"/>
-    <item
-        android:id="@+id/menu_preview"
-        android:orderInCategory="90"
-        app:showAsAction="ifRoom"
-        android:title="预览"/>
+        android:title="搜索"/>
+
 </menu>

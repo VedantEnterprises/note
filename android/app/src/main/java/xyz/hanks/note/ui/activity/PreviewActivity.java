@@ -10,6 +10,7 @@ import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -21,6 +22,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import xyz.hanks.note.R;
+import xyz.hanks.note.util.VectorDrawableUtils;
 
 /**
  * Created by hanks on 16/7/5.
@@ -47,7 +49,7 @@ public class PreviewActivity extends AppCompatActivity {
 
         final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setTitle("预览");
-        toolbar.setNavigationIcon(R.drawable.toolbar_back_white);
+        toolbar.setNavigationIcon(VectorDrawableUtils.getBackDrawable(this));
         setSupportActionBar(toolbar);
         calcText();
     }
@@ -148,4 +150,12 @@ public class PreviewActivity extends AppCompatActivity {
     }
 
 
+    @Override public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                finish();
+                break;
+        }
+        return super.onOptionsItemSelected(item);
+    }
 }

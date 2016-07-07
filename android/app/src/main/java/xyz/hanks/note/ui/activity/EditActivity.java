@@ -6,6 +6,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.graphics.drawable.VectorDrawableCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -41,6 +42,7 @@ import xyz.hanks.note.R;
 import xyz.hanks.note.ui.viewholder.NoteDetailTextViewHolder;
 import xyz.hanks.note.ui.viewholder.NoteDetailViewHolder;
 import xyz.hanks.note.ui.widget.LineTextView;
+import xyz.hanks.note.util.VectorDrawableUtils;
 
 /**
  * Edit note Activity
@@ -84,7 +86,7 @@ public class EditActivity extends AppCompatActivity {
     private void setupUI() {
         final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setTitle("编辑");
-        toolbar.setNavigationIcon(R.drawable.toolbar_back_white);
+        toolbar.setNavigationIcon(VectorDrawableUtils.getBackDrawable(this));
         setSupportActionBar(toolbar);
 
         listView = (ObservableRecyclerView) findViewById(R.id.listView);
@@ -209,7 +211,7 @@ public class EditActivity extends AppCompatActivity {
             case android.R.id.home:
                 finish();
                 break;
-            case R.id.menu_edit:
+            case R.id.menu_preview:
                 PreviewActivity.start(this);
                 break;
         }
@@ -220,6 +222,8 @@ public class EditActivity extends AppCompatActivity {
 
     @Override public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_edit, menu);
+        menu.findItem(R.id.menu_del).setIcon(VectorDrawableUtils.getDeleteDrawable(this));
+        menu.findItem(R.id.menu_preview).setIcon(VectorDrawableUtils.getPreviewDrawable(this));
         return super.onCreateOptionsMenu(menu);
     }
 
