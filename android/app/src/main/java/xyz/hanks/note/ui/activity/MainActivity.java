@@ -7,9 +7,7 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 
-import io.realm.Realm;
 import xyz.hanks.note.R;
-import xyz.hanks.note.model.NoteItem;
 import xyz.hanks.note.ui.adapter.NoteAdapter;
 import xyz.hanks.note.util.VectorDrawableUtils;
 
@@ -22,32 +20,6 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         setupUI();
-
-
-        final NoteItem noteItem = new NoteItem();
-        noteItem._id  =1;
-        noteItem.detail = "aaaa";
-
-        // Log.e("...............",getN().detail);
-    }
-
-    public NoteItem getN(){
-        Realm realm = Realm.getDefaultInstance();
-        realm.executeTransaction(new Realm.Transaction() {
-            @Override public void execute(Realm realm) {
-//                NoteItem noteItem = new NoteItem();
-//                noteItem._id  =1;
-//                noteItem.detail = "aaaa";
-//                realm.copyToRealm(noteItem);
-            }
-        });
-//        NoteItem first = realm.where(NoteItem.class).equalTo("_id",22).findFirst();
-//        NoteItem result = realm.copyFromRealm(first);
-//        Log.e("............",first!=null?first.toString():"null");
-//        realm.close();
-//        return result;
-
-        return null;
     }
 
     private void setupUI() {
@@ -62,7 +34,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_main,menu);
+        getMenuInflater().inflate(R.menu.menu_main, menu);
         menu.findItem(R.id.menu_search).setIcon(VectorDrawableUtils.getSearchDrawable(this));
         return super.onCreateOptionsMenu(menu);
     }
