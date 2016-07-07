@@ -2,22 +2,27 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
           package="xyz.hanks.note">
 
-    <application
-        android:name=".NoteApp"
-        android:allowBackup="true"
-        android:icon="@mipmap/ic_launcher"
-        android:label="@string/app_name"
-        android:supportsRtl="true"
-        android:theme="@style/AppTheme">
-        <activity android:name=".ui.activity.MainActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
+  <application
+    android:name=".NoteApp"
+    android:allowBackup="true"
+    android:icon="@mipmap/ic_launcher"
+    android:label="@string/app_name"
+    android:supportsRtl="true"
+    android:theme="@style/AppTheme">
+    <activity android:name=".ui.activity.MainActivity"
+              android:label="@string/mainTitle">
+      <intent-filter>
+        <action android:name="android.intent.action.MAIN"/>
 
-                <category android:name="android.intent.category.LAUNCHER"/>
-            </intent-filter>
-        </activity>
-        <activity android:name=".ui.activity.EditActivity" android:windowSoftInputMode="adjustResize"/>
-        <activity android:name=".ui.activity.PreviewActivity" android:windowSoftInputMode="adjustResize"/>
-    </application>
+        <category android:name="android.intent.category.LAUNCHER"/>
+      </intent-filter>
+    </activity>
+    <activity android:name=".ui.activity.EditActivity"
+              android:label="@string/editTitle"
+              android:windowSoftInputMode="adjustResize"/>
+    <activity android:name=".ui.activity.PreviewActivity"
+              android:label="@string/previewTitle"
+              android:windowSoftInputMode="adjustResize"/>
+  </application>
 
 </manifest>
