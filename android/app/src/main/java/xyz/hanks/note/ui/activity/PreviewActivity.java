@@ -31,21 +31,22 @@ public class PreviewActivity extends AppCompatActivity {
 
     public static final String ATT_IMAGE_PATTERN_STRING = "<image w=.*? h=.*? describe=.*? name=.*?>";
     private static final String TAG = "PreviewActivity";
+    private static final String EXTRA_CONTENT = "content";
     List<NoteItem> data = new ArrayList<>();
-    private String noteContent = "进来看看还有什么惊喜^_^\n" +
-            "我们支持把便签的文字直接发送到新<image w=858 h=483 describe= name=Note_123.jpg>浪微博，\n\n" +
-            "同时你再也不用忍受新浪的数字限制了，当文字超过 140 之后，便签会自动生成排版优雅、字体<image w=858 h=223 describe=no one name=Note_453.jpg>精美的图片长微博，希望我们的便签能够让你重新喜欢上不那么碎片的表达。试试点击右上角的小飞机，再点击随后出现的菜单中的 “以图片分享” 将图片分享至你的其他应用。\n" +
-            "便签内容现在支持分享至新浪长微博同时你再也不用忍受新浪的数字限制了，当文字超过 140 之后，便签同<image w=858 h=383 describe= name=Note_123.jpg>时你再也不用忍受新浪的数字限制了，当文字超过 140 之后，便签同时你再也不用忍受新浪的数字限制了，当文字超过 140 之后，便签。\n";
+    private String noteContent = "";
 
 
-    public static void start(Context context) {
+    public static void start(Context context, String noteContent) {
         Intent starter = new Intent(context, PreviewActivity.class);
+        starter.putExtra(EXTRA_CONTENT, noteContent);
         context.startActivity(starter);
     }
 
     @Override protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_preview);
+
+        noteContent = getIntent().getStringExtra(EXTRA_CONTENT);
 
         final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setTitle("预览");
@@ -123,6 +124,15 @@ public class PreviewActivity extends AppCompatActivity {
 
     }
 
+    @Override public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                finish();
+                break;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
     class NoteItem {
         int type; // 0 文字 1 图片
         String content; // 如果是文字的内容
@@ -147,15 +157,5 @@ public class PreviewActivity extends AppCompatActivity {
             tv_line = (TextView) itemView.findViewById(R.id.tv_line);
             imageView = (ImageView) itemView.findViewById(R.id.iv_img_item);
         }
-    }
-
-
-    @Override public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                finish();
-                break;
-        }
-        return super.onOptionsItemSelected(item);
     }
 }
