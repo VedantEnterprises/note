@@ -18,11 +18,15 @@
     app:subtitleTextAppearance="@style/ToolbarSubtitleAppearance"
     app:theme="@style/ThemeOverlay.AppCompat.Dark"/>
 
-  <ScrollView android:layout_width="match_parent" android:layout_height="wrap_content">
+  <ScrollView android:layout_width="match_parent" android:layout_height="wrap_content"
+              android:clipToPadding="false"
+              android:fadingEdgeLength="0dp"
+              android:overScrollMode="never"
+              android:padding="16dp"
+              android:scrollbars="none">
     <LinearLayout android:id="@+id/container_layout"
                   android:layout_width="match_parent"
                   android:layout_height="wrap_content"
-                  android:layout_margin="16dp"
                   android:background="@drawable/weibo_background_nosignature"
                   android:elevation="2dp"
                   android:orientation="vertical"
