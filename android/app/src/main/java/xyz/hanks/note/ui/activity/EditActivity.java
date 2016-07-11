@@ -38,6 +38,7 @@ import xyz.hanks.note.R;
 import xyz.hanks.note.ui.viewholder.NoteDetailTextViewHolder;
 import xyz.hanks.note.ui.viewholder.NoteDetailViewHolder;
 import xyz.hanks.note.ui.widget.LineTextView;
+import xyz.hanks.note.util.ScreenUtils;
 import xyz.hanks.note.util.VectorDrawableUtils;
 
 /**
@@ -49,7 +50,7 @@ public class EditActivity extends AppCompatActivity {
     public static final String ATT_IMAGE_TAG = "<image w=%s h=%s describe=%s name=%s>";
     public static final String ATT_IMAGE_PATTERN_STRING = "<image w=.*? h=.*? describe=.*? name=.*?>";
     private static final String TAG = "........";
-    private final int ITEM_HEIGHT = 125;
+    private int ITEM_HEIGHT = 125;
     List<NoteItem> data = new ArrayList<>();
     List<String> backupData = new ArrayList<>();
     private String noteContent = "进来看看还有什么惊喜^_^\n" +
@@ -75,7 +76,7 @@ public class EditActivity extends AppCompatActivity {
         backupData.clear();
         View view = View.inflate(this, R.layout.item_list_note_detail_text, null);
         TextView textView = (TextView) view.findViewById(R.id.et_note_item);
-        int widthMeasureSpec = View.MeasureSpec.makeMeasureSpec(720, View.MeasureSpec.AT_MOST);
+        int widthMeasureSpec = View.MeasureSpec.makeMeasureSpec(ScreenUtils.getDeviceWidth(), View.MeasureSpec.AT_MOST);
         int heightMeasureSpec = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED);
         for (NoteItem noteItem : data) {
             if (noteItem.type == 0) {
@@ -99,6 +100,7 @@ public class EditActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit);
         setupUI();
+        ITEM_HEIGHT = (int) getResources().getDimension(R.dimen.note_detail_item_height);
     }
 
     private void setupUI() {
@@ -196,6 +198,7 @@ public class EditActivity extends AppCompatActivity {
             noteItem.start = m;
             noteItem.end = n;
             data.add(noteItem);
+
             Log.e(TAG, imageString + "," + m + "," + n);
             tmp = tmp.substring(n);
         }
@@ -407,11 +410,11 @@ public class EditActivity extends AppCompatActivity {
             StringBuilder sb = new StringBuilder();
             for (int i = 0; i < backupData.size(); i++) {
                 String s = backupData.get(i);
-                sb.append(s.trim());
+                sb.append(s);
 
-                if (!isImage(s) && i + 1 < backupData.size() && !isImage(backupData.get(i + 1))) {
-                    sb.append('\n');
-                }
+//                if (!isImage(s) && i + 1 < backupData.size() && !isImage(backupData.get(i + 1))) {
+//                    sb.append('\n');
+//                }
             }
             noteContent = sb.toString();
             changeToNormalMode();

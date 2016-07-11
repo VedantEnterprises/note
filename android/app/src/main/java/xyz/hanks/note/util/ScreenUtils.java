@@ -1,7 +1,9 @@
 package xyz.hanks.note.util;
 
+import android.content.Context;
 import android.util.DisplayMetrics;
 import android.util.TypedValue;
+import android.view.WindowManager;
 
 import xyz.hanks.note.NoteApp;
 
@@ -15,5 +17,11 @@ public class ScreenUtils {
         return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, valueInDp, metrics);
     }
 
+    public static int getDeviceWidth(){
+        DisplayMetrics metrics = new DisplayMetrics();
+        WindowManager wm = (WindowManager) NoteApp.app.getSystemService(Context.WINDOW_SERVICE);
+        wm.getDefaultDisplay().getMetrics(metrics);
+        return metrics.widthPixels;
+    }
 
 }

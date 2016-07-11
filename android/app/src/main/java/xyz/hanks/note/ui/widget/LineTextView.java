@@ -9,50 +9,48 @@ import android.util.Log;
 import android.view.Gravity;
 import android.widget.EditText;
 
+import xyz.hanks.note.R;
+
 /**
  * 每一行的文字垂直居中
  * Created by hanks on 16/7/2.
  */
 public class LineTextView extends EditText {
 
-    private static final float ITEM_HEIGHT = 125;
+    private float ITEM_HEIGHT = 125;
     boolean reLayout = false;
     TextWatcher textWatcher;
 
     public LineTextView(Context context) {
-        super(context);
+        this(context,null);
     }
 
     public LineTextView(Context context, AttributeSet attrs) {
-        super(context, attrs);
+        this(context, attrs,0);
     }
-
 
     public LineTextView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-
+        ITEM_HEIGHT = (int) getResources().getDimension(R.dimen.note_detail_item_height);
         addTextChangedListener(new android.text.TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
                 if (textWatcher != null) {
                     textWatcher.beforeTextChanged(charSequence, i, i1, i2);
                 }
             }
-
             @Override public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
                 float add = ITEM_HEIGHT;
-                float mul = 0;
                 setLineSpacing(0f, 1f);
-                setLineSpacing(add, mul);
+                setLineSpacing(add, 0);
                 setIncludeFontPadding(false);
                 setGravity(Gravity.CENTER_VERTICAL);
-                //setPadding(getPaddingLeft(), (int) ((ITEM_HEIGHT - getTextSize()) * 0.5f), getPaddingRight(), getPaddingBottom());
+                int top = (int) ((add - getTextSize()) * 0.5f);
+                setPadding(getPaddingLeft(), top, getPaddingRight(), -top);
                 if (textWatcher != null) {
                     textWatcher.onTextChanged(charSequence, i, i1, i2);
                 }
             }
-
             @Override public void afterTextChanged(Editable editable) {
                 if (textWatcher != null) {
                     textWatcher.afterTextChanged(editable);
