@@ -27,6 +27,13 @@ public class MainActivity extends BaseActivity {
         getData();
     }
 
+    private void setupUI() {
+        recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        adapter = NoteAdapter.newInstance(noteList);
+        recyclerView.setAdapter(adapter);
+    }
+
     private void getData() {
         noteList.addAll(NoteItemManager.getNoteItemList());
         adapter.notifyItemRangeChanged(0, noteList.size());
@@ -34,13 +41,6 @@ public class MainActivity extends BaseActivity {
 
     @Override protected int getLayoutId() {
         return R.layout.activity_main;
-    }
-
-    private void setupUI() {
-        recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        adapter = NoteAdapter.newInstance(noteList);
-        recyclerView.setAdapter(adapter);
     }
 
     @Override public boolean onCreateOptionsMenu(Menu menu) {

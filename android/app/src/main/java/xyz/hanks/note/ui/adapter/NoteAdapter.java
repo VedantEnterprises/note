@@ -12,6 +12,7 @@ import java.util.List;
 import xyz.hanks.note.R;
 import xyz.hanks.note.model.NoteItem;
 import xyz.hanks.note.ui.activity.EditActivity;
+import xyz.hanks.note.util.PrettyDateUtils;
 
 /**
  * Created by hanks on 16/6/22.
@@ -37,7 +38,7 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.NoteItemViewHo
         // holder.cbFavorite.setChecked(true);
         NoteItem item = data.get(position);
         holder.ivImage.setVisibility(View.GONE);
-        holder.tvModifyTime.setText(item.updatedAt + "");
+        holder.tvModifyTime.setText(PrettyDateUtils.format(item.createdAt));
         holder.tvNoteDetail.setText(item.title);
     }
 

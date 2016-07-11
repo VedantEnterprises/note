@@ -20,6 +20,5 @@ public class NoteItemManager {
             noteItemList.add(item);
         }
         return noteItemList;
-
     }
 }

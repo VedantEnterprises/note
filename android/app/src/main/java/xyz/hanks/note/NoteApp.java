@@ -25,9 +25,7 @@ public class NoteApp extends Application {
         // Create a RealmConfiguration that saves the Realm file in the app's "files" directory.
         RealmConfiguration realmConfig = new RealmConfiguration.Builder(app).name(getString(R.string.app_name)).build();
         Realm.setDefaultConfiguration(realmConfig);
-
-
-        initData();
+        // initData();
     }
 
     private void initData() {
