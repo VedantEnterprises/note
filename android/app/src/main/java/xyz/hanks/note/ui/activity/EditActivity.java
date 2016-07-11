@@ -2,7 +2,6 @@ package xyz.hanks.note.ui.activity;
 
 import android.content.Context;
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -12,6 +11,7 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.text.Editable;
+import android.text.Layout;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -20,7 +20,6 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
 import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -31,9 +30,7 @@ import com.github.ksoichiro.android.observablescrollview.ScrollState;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -55,7 +52,6 @@ public class EditActivity extends AppCompatActivity {
     private final int ITEM_HEIGHT = 125;
     List<NoteItem> data = new ArrayList<>();
     List<String> backupData = new ArrayList<>();
-    Map<Integer, List<String>> lineTextMap = new HashMap<>();
     private String noteContent = "进来看看还有什么惊喜^_^\n" +
             "我们支持把便签的文字直接发送到新<image w=858 h=483 describe= name=Note_123.jpg>浪微博，\n\n" +
             "同时你再也不用忍受新浪的数字限制了，当文字超过 140 之后，便签会自动生成排版优雅、字体<image w=858 h=223 describe=no one name=Note_453.jpg>精美的图片长微博，希望我们的便签能够让你重新喜欢上不那么碎片的表达。试试点击右上角的小飞机，再点击随后出现的菜单中的 “以图片分享” 将图片分享至你的其他应用。\n" +
@@ -70,10 +66,33 @@ public class EditActivity extends AppCompatActivity {
     private int lastScrollY = 0;
     private LinearLayoutManager layoutManager;
 
-
     public static void start(Context context) {
         Intent starter = new Intent(context, EditActivity.class);
         context.startActivity(starter);
+    }
+
+    public void measureText() {
+        backupData.clear();
+        View view = View.inflate(this, R.layout.item_list_note_detail_text, null);
+        TextView textView = (TextView) view.findViewById(R.id.et_note_item);
+        int widthMeasureSpec = View.MeasureSpec.makeMeasureSpec(720, View.MeasureSpec.AT_MOST);
+        int heightMeasureSpec = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED);
+        for (NoteItem noteItem : data) {
+            if (noteItem.type == 0) {
+                textView.setText(noteItem.content);
+                textView.measure(widthMeasureSpec, heightMeasureSpec);
+                Layout layout = textView.getLayout();
+                int lineCount = layout.getLineCount();
+                for (int i = 0; i < lineCount; i++) {
+                    int lineStart = layout.getLineStart(i);
+                    int lineEnd = layout.getLineEnd(i);
+                    String lineText = textView.getText().subSequence(lineStart, lineEnd).toString();
+                    backupData.add(lineText);
+                }
+            } else {
+                backupData.add(noteItem.content);
+            }
+        }
     }
 
     @Override protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -123,7 +142,7 @@ public class EditActivity extends AppCompatActivity {
         //        activityRootView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
         //            @Override
         //            public void onGlobalLayout() {
-        //                int heightDiff = activityRootView.getRootView().getHeight() - activityRootView.getHeight();
+        //                int heightDiff = activityRootView.getRootView().measureText() - activityRootView.measureText();
         //                if (heightDiff > ScreenUtils.dpToPx(200)) { // if more than 200 dp, it's probably a keyboard...
         //                    // hide
         //
@@ -163,7 +182,7 @@ public class EditActivity extends AppCompatActivity {
             }
 
             NoteItem noteItem = new NoteItem();
-
+            noteItem.content = imageString;
             int wIndex = imageString.indexOf("w=");
             int hIndex = imageString.indexOf("h=");
             int dIndex = imageString.indexOf("describe=");
@@ -191,16 +210,7 @@ public class EditActivity extends AppCompatActivity {
     }
 
     private void calcBackupText() {
-
-        backupData.clear();
-        for (int i = 0; i < data.size(); i++) {
-            List<String> strings = lineTextMap.get(i);
-            if (data.get(i).type == 0) {// 文字
-                backupData.addAll(strings);
-            } else {
-                backupData.add(strings.get(0));
-            }
-        }
+        measureText();
         noteDetailAdapter.notifyItemRangeChanged(0, backupData.size());
         layoutManager.scrollToPositionWithOffset(0, lastScrollY);
     }
@@ -211,7 +221,7 @@ public class EditActivity extends AppCompatActivity {
                 finish();
                 break;
             case R.id.menu_preview:
-                PreviewActivity.start(this,noteContent);
+                PreviewActivity.start(this, noteContent);
                 break;
         }
 
@@ -225,7 +235,6 @@ public class EditActivity extends AppCompatActivity {
         menu.findItem(R.id.menu_preview).setIcon(VectorDrawableUtils.getPreviewDrawable(this));
         return super.onCreateOptionsMenu(menu);
     }
-
 
     private void changeToDragMode() {
         draggable = true;
@@ -299,7 +308,6 @@ public class EditActivity extends AppCompatActivity {
     }
 
     class NoteDetailAdapter extends RecyclerView.Adapter {
-
 
         @Override
         public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -378,36 +386,11 @@ public class EditActivity extends AppCompatActivity {
                 if (viewHolder instanceof NoteDetailTextViewHolder) {// 文字
                     final NoteDetailTextViewHolder textHolder = (NoteDetailTextViewHolder) viewHolder;
                     textHolder.lineTextView.setText(noteItem.content);
-                    textHolder.lineTextView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-                        @Override public void onGlobalLayout() {
-                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-                                textHolder.lineTextView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                            } else {
-                                textHolder.lineTextView.getViewTreeObserver().removeGlobalOnLayoutListener(this);
-                            }
-                            List<String> lineTextList = new ArrayList();
-                            int lineCount = textHolder.lineTextView.getLayout().getLineCount();
-                            for (int i = 0; i < lineCount; i++) {
-                                int lineStart = textHolder.lineTextView.getLayout().getLineStart(i);
-                                int lineEnd = textHolder.lineTextView.getLayout().getLineEnd(i);
-                                String lineText = textHolder.lineTextView.getText().subSequence(lineStart, lineEnd).toString();
-                                Log.e(TAG, lineStart + "," + lineEnd + "," + lineText + "," + lineCount);
-                                lineTextList.add(lineText);
-                            }
-                            lineTextMap.put(position, lineTextList);
-                            int finalHeight = ITEM_HEIGHT * lineCount;
-                            Log.e(TAG, "rootLayout" + finalHeight);
-                        }
-
-                    });
                 } else {
                     final NoteDetailViewHolder imageHolder = (NoteDetailViewHolder) viewHolder;
                     imageHolder.tv_line.setVisibility(View.INVISIBLE);
                     imageHolder.imgLayout.setVisibility(View.VISIBLE);
                     //holder.imageView.setImageBitmap(FileUtils.getBitmapFromFile(noteItem.name));
-                    List<String> lineTextList = new ArrayList();
-                    lineTextList.add("<image w=" + noteItem.width + " h=" + noteItem.height + " describe=" + noteItem.describe + " name=" + noteItem.name + ">");
-                    lineTextMap.put(position, lineTextList);
                     int itemCount = noteItem.height % ITEM_HEIGHT == 0 ? noteItem.height / ITEM_HEIGHT : noteItem.height / ITEM_HEIGHT + 1;
                     final int finalHeight = itemCount * ITEM_HEIGHT;
                     Log.e(TAG, "ImageView" + finalHeight);
