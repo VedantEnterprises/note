@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
+import android.view.MenuItem;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,6 +14,7 @@ import xyz.hanks.note.R;
 import xyz.hanks.note.datamanager.db.NoteItemManager;
 import xyz.hanks.note.model.NoteItem;
 import xyz.hanks.note.ui.adapter.NoteAdapter;
+import xyz.hanks.note.ui.fragment.SettingFragment;
 import xyz.hanks.note.util.VectorDrawableUtils;
 
 public class MainActivity extends BaseActivity {
@@ -52,5 +54,14 @@ public class MainActivity extends BaseActivity {
         getMenuInflater().inflate(R.menu.menu_main, menu);
         menu.findItem(R.id.menu_search).setIcon(VectorDrawableUtils.getSearchDrawable(this));
         return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                CommonActivity.start(this, SettingFragment.class.getName());
+            break;
+        }
+        return super.onOptionsItemSelected(item);
     }
 }

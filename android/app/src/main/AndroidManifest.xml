@@ -23,6 +23,7 @@
     <activity android:name=".ui.activity.PreviewActivity"
               android:label="@string/previewTitle"
               android:windowSoftInputMode="adjustResize"/>
+    <activity android:name=".ui.activity.CommonActivity"/>
   </application>
 
 </manifest>
