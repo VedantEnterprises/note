@@ -1,5 +1,6 @@
 package xyz.hanks.note.ui.activity;
 
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -32,6 +33,10 @@ public class MainActivity extends BaseActivity {
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         adapter = NoteAdapter.newInstance(noteList);
         recyclerView.setAdapter(adapter);
+    }
+
+    @Override protected Drawable getNavigationIcon() {
+        return VectorDrawableUtils.getSettingDrawable(this);
     }
 
     private void getData() {

@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:orientation="vertical">
+
+  <TextView
+    android:layout_width="match_parent"
+    android:layout_height="48dp"
+    android:layout_marginTop="16dp"
+    android:background="@color/textColor3"
+    android:gravity="center_vertical"
+    android:paddingLeft="16dp"
+    android:text="喜欢云服务"
+    android:textColor="@color/textColor1"
+    android:textSize="15sp"/>
+  <TextView
+    android:layout_width="match_parent"
+    android:layout_height="48dp"
+    android:layout_marginTop="16dp"
+    android:background="@color/textColor3"
+    android:gravity="center_vertical"
+    android:paddingLeft="16dp"
+    android:text="启用 Markdown 服务"
+    android:textColor="@color/textColor1"
+    android:textSize="15sp"/>
+  <TextView
+    android:layout_width="match_parent"
+    android:layout_height="48dp"
+    android:background="@color/textColor3"
+    android:gravity="center_vertical"
+    android:paddingLeft="16dp"
+    android:text="便签分享时的页脚显示"
+    android:textColor="@color/textColor1"
+    android:textSize="15sp"/>
+  <TextView
+    android:layout_width="match_parent"
+    android:layout_height="48dp"
+    android:background="@color/textColor3"
+    android:gravity="center_vertical"
+    android:paddingLeft="16dp"
+    android:text="应用加密"
+    android:textColor="@color/textColor1"
+    android:textSize="15sp"/>
+
+  <TextView
+    android:layout_width="match_parent"
+    android:layout_height="48dp"
+    android:layout_marginTop="16dp"
+    android:background="@color/textColor3"
+    android:gravity="center_vertical"
+    android:paddingLeft="16dp"
+    android:text="分享此应用"
+    android:textColor="@color/textColor1"
+    android:textSize="15sp"/>
+
+  <TextView
+    android:layout_width="match_parent"
+    android:layout_height="48dp"
+    android:background="@color/textColor3"
+    android:gravity="center_vertical"
+    android:paddingLeft="16dp"
+    android:text="检测更新"
+    android:textColor="@color/textColor1"
+    android:textSize="15sp"/>
+
+  <TextView
+    android:layout_width="match_parent"
+    android:layout_height="48dp"
+    android:background="@color/textColor3"
+    android:gravity="center_vertical"
+    android:paddingLeft="16dp"
+    android:text="用户反馈"
+    android:textColor="@color/textColor1"
+    android:textSize="15sp"/>
+</LinearLayout>

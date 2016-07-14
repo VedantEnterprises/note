@@ -28,4 +28,7 @@ public class VectorDrawableUtils {
     public static Drawable getSearchDrawable(Context context){
         return VectorDrawableCompat.create(context.getResources(), R.drawable.ic_search_white_24dp, context.getTheme());
     }
+    public static Drawable getSettingDrawable(Context context){
+        return VectorDrawableCompat.create(context.getResources(), R.drawable.ic_search_white_24dp, context.getTheme());
+    }
 }
