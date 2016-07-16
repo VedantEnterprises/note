@@ -47,7 +47,7 @@ public class MainActivity extends BaseActivity {
     }
 
     private void addNewNote() {
-        EditActivity.start(this,"");
+        EditActivity.start(this,-1);
     }
 
     @Override protected Drawable getNavigationIcon() {

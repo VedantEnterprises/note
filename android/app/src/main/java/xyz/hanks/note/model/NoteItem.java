@@ -12,6 +12,7 @@ import io.realm.annotations.RealmClass;
 public class NoteItem implements RealmModel {
 
     public static final String UPDATED_AT = "updatedAt";
+    public static final String OBJECT_ID = "objectId";
 
     @PrimaryKey
     public int objectId;

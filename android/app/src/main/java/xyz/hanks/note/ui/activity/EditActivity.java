@@ -34,7 +34,9 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import io.realm.Realm;
 import xyz.hanks.note.R;
+import xyz.hanks.note.model.NoteItem;
 import xyz.hanks.note.ui.viewholder.NoteDetailTextViewHolder;
 import xyz.hanks.note.ui.viewholder.NoteDetailViewHolder;
 import xyz.hanks.note.ui.widget.LineTextView;
@@ -50,9 +52,9 @@ public class EditActivity extends AppCompatActivity {
     public static final String ATT_IMAGE_TAG = "<image w=%s h=%s describe=%s name=%s>";
     public static final String ATT_IMAGE_PATTERN_STRING = "<image w=.*? h=.*? describe=.*? name=.*?>";
     private static final String TAG = "........";
-    private static final String EXTRA_CONTENT = "content";
+    private static final String EXTRA_ID = "note_id";
     private int ITEM_HEIGHT = 125;
-    List<NoteItem> data = new ArrayList<>();
+    List<NoteItemView> data = new ArrayList<>();
     List<String> backupData = new ArrayList<>();
     private String noteContent = "进来看看还有什么惊喜^_^\n" +
             "我们支持把便签的文字直接发送到新<image w=858 h=483 describe= name=Note_123.jpg>浪微博，\n\n" +
@@ -67,10 +69,11 @@ public class EditActivity extends AppCompatActivity {
     private boolean draggable = false;
     private int lastScrollY = 0;
     private LinearLayoutManager layoutManager;
+    private long noteId = -1;
 
-    public static void start(Context context,String content) {
+    public static void start(Context context,long noteId) {
         Intent starter = new Intent(context, EditActivity.class);
-        starter.putExtra(EXTRA_CONTENT,content);
+        starter.putExtra(EXTRA_ID,noteId);
         starter.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         context.startActivity(starter);
     }
@@ -81,9 +84,9 @@ public class EditActivity extends AppCompatActivity {
         TextView textView = (TextView) view.findViewById(R.id.et_note_item);
         int widthMeasureSpec = View.MeasureSpec.makeMeasureSpec(ScreenUtils.getDeviceWidth(), View.MeasureSpec.AT_MOST);
         int heightMeasureSpec = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED);
-        for (NoteItem noteItem : data) {
-            if (noteItem.type == 0) {
-                textView.setText(noteItem.content);
+        for (NoteItemView noteItemView : data) {
+            if (noteItemView.type == 0) {
+                textView.setText(noteItemView.content);
                 textView.measure(widthMeasureSpec, heightMeasureSpec);
                 Layout layout = textView.getLayout();
                 int lineCount = layout.getLineCount();
@@ -94,7 +97,7 @@ public class EditActivity extends AppCompatActivity {
                     backupData.add(lineText);
                 }
             } else {
-                backupData.add(noteItem.content);
+                backupData.add(noteItemView.content);
             }
         }
     }
@@ -102,8 +105,16 @@ public class EditActivity extends AppCompatActivity {
     @Override protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit);
-        if(getIntent().hasExtra(EXTRA_CONTENT)){
-            noteContent = getIntent().getStringExtra(EXTRA_CONTENT);
+        if(getIntent().hasExtra(EXTRA_ID)){
+            noteId = getIntent().getLongExtra(EXTRA_ID,-1);
+        }
+
+        if(noteId!=-1){
+            Realm realm = Realm.getDefaultInstance();
+            NoteItem noteItem = realm.where(NoteItem.class).equalTo(NoteItem.OBJECT_ID, noteId).findFirst();
+            if (noteItem != null) {
+                noteContent = noteItem.detail;
+            }
         }
         setupUI();
         ITEM_HEIGHT = (int) getResources().getDimension(R.dimen.note_detail_item_height);
@@ -183,36 +194,36 @@ public class EditActivity extends AppCompatActivity {
             String imageString = tmp.substring(m, n);
 
             if (m > 0) {
-                NoteItem noteItem = new NoteItem();
-                noteItem.type = 0;
-                noteItem.content = tmp.substring(0, m);
-                data.add(noteItem);
+                NoteItemView noteItemView = new NoteItemView();
+                noteItemView.type = 0;
+                noteItemView.content = tmp.substring(0, m);
+                data.add(noteItemView);
             }
 
-            NoteItem noteItem = new NoteItem();
-            noteItem.content = imageString;
+            NoteItemView noteItemView = new NoteItemView();
+            noteItemView.content = imageString;
             int wIndex = imageString.indexOf("w=");
             int hIndex = imageString.indexOf("h=");
             int dIndex = imageString.indexOf("describe=");
             int nIndex = imageString.indexOf("name=");
 
-            noteItem.type = 1;
-            noteItem.width = Integer.parseInt(imageString.substring(wIndex + 2, hIndex - 1));
-            noteItem.height = Integer.parseInt(imageString.substring(hIndex + 2, dIndex - 1));
-            noteItem.describe = imageString.substring(dIndex + 9, nIndex - 1);
-            noteItem.name = imageString.substring(nIndex + 5, imageString.length() - 1);
-            noteItem.start = m;
-            noteItem.end = n;
-            data.add(noteItem);
+            noteItemView.type = 1;
+            noteItemView.width = Integer.parseInt(imageString.substring(wIndex + 2, hIndex - 1));
+            noteItemView.height = Integer.parseInt(imageString.substring(hIndex + 2, dIndex - 1));
+            noteItemView.describe = imageString.substring(dIndex + 9, nIndex - 1);
+            noteItemView.name = imageString.substring(nIndex + 5, imageString.length() - 1);
+            noteItemView.start = m;
+            noteItemView.end = n;
+            data.add(noteItemView);
 
             Log.e(TAG, imageString + "," + m + "," + n);
             tmp = tmp.substring(n);
         }
         if (!TextUtils.isEmpty(tmp)) {
-            NoteItem noteItem = new NoteItem();
-            noteItem.type = 0;
-            noteItem.content = tmp;
-            data.add(noteItem);
+            NoteItemView noteItemView = new NoteItemView();
+            noteItemView.type = 0;
+            noteItemView.content = tmp;
+            data.add(noteItemView);
         }
         noteDetailAdapter.notifyItemRangeChanged(0, data.size());
         layoutManager.scrollToPositionWithOffset(0, lastScrollY);
@@ -230,6 +241,20 @@ public class EditActivity extends AppCompatActivity {
                 finish();
                 break;
             case R.id.menu_preview:
+                final NoteItem tmp = new NoteItem();
+                if(noteId==-1){
+                    tmp.createdAt = System.currentTimeMillis();
+                    tmp.updatedAt = System.currentTimeMillis();
+                }
+                tmp.detail = noteContent;
+                tmp.title = backupData.size()>0 ? backupData.get(0): "";
+                Realm realm = Realm.getDefaultInstance();
+                realm.executeTransaction(new Realm.Transaction() {
+                    @Override public void execute(Realm realm) {
+                        realm.copyToRealmOrUpdate(tmp);
+                    }
+                });
+                realm.close();
                 PreviewActivity.start(this, noteContent);
                 break;
         }
@@ -255,33 +280,33 @@ public class EditActivity extends AppCompatActivity {
         calcText();
     }
 
-    @NonNull private NoteItem getNoteItem(String str) {
+    @NonNull private NoteItemView getNoteItem(String str) {
         int wIndex = str.indexOf("w=");
         int hIndex = str.indexOf("h=");
         int dIndex = str.indexOf("describe=");
         int nIndex = str.indexOf("name=");
-        NoteItem noteItem = new NoteItem();
-        noteItem.type = 1;
-        noteItem.width = Integer.parseInt(str.substring(wIndex + 2, hIndex - 1));
-        noteItem.height = Integer.parseInt(str.substring(hIndex + 2, dIndex - 1));
-        noteItem.describe = str.substring(dIndex + 9, nIndex - 1);
-        noteItem.name = str.substring(nIndex + 5, str.length() - 1);
-        return noteItem;
+        NoteItemView noteItemView = new NoteItemView();
+        noteItemView.type = 1;
+        noteItemView.width = Integer.parseInt(str.substring(wIndex + 2, hIndex - 1));
+        noteItemView.height = Integer.parseInt(str.substring(hIndex + 2, dIndex - 1));
+        noteItemView.describe = str.substring(dIndex + 9, nIndex - 1);
+        noteItemView.name = str.substring(nIndex + 5, str.length() - 1);
+        return noteItemView;
     }
 
     private void calcContentString() {
         StringBuilder sb = new StringBuilder();
-        for (NoteItem noteItem : data) {
-            if (noteItem.type == 0) {
-                sb.append(noteItem.content);
+        for (NoteItemView noteItemView : data) {
+            if (noteItemView.type == 0) {
+                sb.append(noteItemView.content);
             } else {
-                sb.append(String.format(ATT_IMAGE_TAG, noteItem.width, noteItem.height, noteItem.describe, noteItem.name));
+                sb.append(String.format(ATT_IMAGE_TAG, noteItemView.width, noteItemView.height, noteItemView.describe, noteItemView.name));
             }
         }
         noteContent = sb.toString();
     }
 
-    class NoteItem {
+    class NoteItemView {
         int type; // 0 文字 1 图片
         String content; // 如果是文字的内容
         String name;
@@ -332,8 +357,8 @@ public class EditActivity extends AppCompatActivity {
                     @Override
                     public void onTextChanged(CharSequence var1, int var2, int var3, int var4) {
                         int adapterPosition = detailTextViewHolder.getAdapterPosition();
-                        NoteItem noteItem = data.get(adapterPosition);
-                        noteItem.content = var1.toString();
+                        NoteItemView noteItemView = data.get(adapterPosition);
+                        noteItemView.content = var1.toString();
                         calcContentString();
 
                     }
@@ -378,9 +403,9 @@ public class EditActivity extends AppCompatActivity {
                 if (isImage(str)) {
                     holder.tv_line.setVisibility(View.INVISIBLE);
                     holder.imgLayout.setVisibility(View.VISIBLE);
-                    NoteItem noteItem = getNoteItem(str);
-                    //holder.imageView.setImageBitmap(FileUtils.getBitmapFromFile(noteItem.name));
-                    int itemCount = noteItem.height % ITEM_HEIGHT == 0 ? noteItem.height / ITEM_HEIGHT : noteItem.height / ITEM_HEIGHT + 1;
+                    NoteItemView noteItemView = getNoteItem(str);
+                    //holder.imageView.setImageBitmap(FileUtils.getBitmapFromFile(noteItemView.name));
+                    int itemCount = noteItemView.height % ITEM_HEIGHT == 0 ? noteItemView.height / ITEM_HEIGHT : noteItemView.height / ITEM_HEIGHT + 1;
                     final int finalHeight = itemCount * ITEM_HEIGHT;
                     Log.e(TAG, "ImageView" + finalHeight);
                     holder.rootLayout.getLayoutParams().height = finalHeight;
@@ -391,16 +416,16 @@ public class EditActivity extends AppCompatActivity {
                 }
 
             } else {
-                NoteItem noteItem = data.get(position);
+                NoteItemView noteItemView = data.get(position);
                 if (viewHolder instanceof NoteDetailTextViewHolder) {// 文字
                     final NoteDetailTextViewHolder textHolder = (NoteDetailTextViewHolder) viewHolder;
-                    textHolder.lineTextView.setText(noteItem.content);
+                    textHolder.lineTextView.setText(noteItemView.content);
                 } else {
                     final NoteDetailViewHolder imageHolder = (NoteDetailViewHolder) viewHolder;
                     imageHolder.tv_line.setVisibility(View.INVISIBLE);
                     imageHolder.imgLayout.setVisibility(View.VISIBLE);
-                    //holder.imageView.setImageBitmap(FileUtils.getBitmapFromFile(noteItem.name));
-                    int itemCount = noteItem.height % ITEM_HEIGHT == 0 ? noteItem.height / ITEM_HEIGHT : noteItem.height / ITEM_HEIGHT + 1;
+                    //holder.imageView.setImageBitmap(FileUtils.getBitmapFromFile(noteItemView.name));
+                    int itemCount = noteItemView.height % ITEM_HEIGHT == 0 ? noteItemView.height / ITEM_HEIGHT : noteItemView.height / ITEM_HEIGHT + 1;
                     final int finalHeight = itemCount * ITEM_HEIGHT;
                     Log.e(TAG, "ImageView" + finalHeight);
                     imageHolder.rootLayout.getLayoutParams().height = finalHeight;
