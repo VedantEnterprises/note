@@ -50,6 +50,7 @@ public class EditActivity extends AppCompatActivity {
     public static final String ATT_IMAGE_TAG = "<image w=%s h=%s describe=%s name=%s>";
     public static final String ATT_IMAGE_PATTERN_STRING = "<image w=.*? h=.*? describe=.*? name=.*?>";
     private static final String TAG = "........";
+    private static final String EXTRA_CONTENT = "content";
     private int ITEM_HEIGHT = 125;
     List<NoteItem> data = new ArrayList<>();
     List<String> backupData = new ArrayList<>();
@@ -67,8 +68,10 @@ public class EditActivity extends AppCompatActivity {
     private int lastScrollY = 0;
     private LinearLayoutManager layoutManager;
 
-    public static void start(Context context) {
+    public static void start(Context context,String content) {
         Intent starter = new Intent(context, EditActivity.class);
+        starter.putExtra(EXTRA_CONTENT,content);
+        starter.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         context.startActivity(starter);
     }
 
@@ -99,6 +102,9 @@ public class EditActivity extends AppCompatActivity {
     @Override protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit);
+        if(getIntent().hasExtra(EXTRA_CONTENT)){
+            noteContent = getIntent().getStringExtra(EXTRA_CONTENT);
+        }
         setupUI();
         ITEM_HEIGHT = (int) getResources().getDimension(R.dimen.note_detail_item_height);
     }

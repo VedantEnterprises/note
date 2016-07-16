@@ -12,4 +12,8 @@
                 <item name="android:textColorPrimaryInverse">@color/textColor3</item>
                 <item name="android:textColorSecondary">@color/textColor2</item>
         </style>
+
+        <style name="Fab">
+                <item name="android:layout_margin">16dp</item>
+        </style>
 </resources>

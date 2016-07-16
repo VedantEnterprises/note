@@ -19,4 +19,13 @@
     <item name="android:textSize">12sp</item>
   </style>
 
+
+  <style name="Fab">
+    <item name="android:layout_marginLeft">0dp</item>
+    <item name="android:layout_marginTop">0dp</item>
+    <item name="android:layout_marginRight">8dp</item>
+    <item name="android:layout_marginBottom">8dp</item>
+  </style>
+
+
 </resources>

@@ -2,10 +2,12 @@ package xyz.hanks.note.ui.activity;
 
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,6 +24,7 @@ public class MainActivity extends BaseActivity {
     private RecyclerView recyclerView;
     private List<NoteItem> noteList = new ArrayList<>();
     private NoteAdapter adapter;
+    private FloatingActionButton addButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,10 +34,20 @@ public class MainActivity extends BaseActivity {
     }
 
     private void setupUI() {
+        addButton = (FloatingActionButton) findViewById(R.id.fab);
         recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         adapter = NoteAdapter.newInstance(noteList);
         recyclerView.setAdapter(adapter);
+        addButton.setOnClickListener(new View.OnClickListener() {
+            @Override public void onClick(View view) {
+                addNewNote();
+            }
+        });
+    }
+
+    private void addNewNote() {
+        EditActivity.start(this,"");
     }
 
     @Override protected Drawable getNavigationIcon() {
