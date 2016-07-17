@@ -129,14 +129,14 @@ public class PreviewActivity extends AppCompatActivity {
 
 
     @Override public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_preview,menu);
+        getMenuInflater().inflate(R.menu.menu_preview, menu);
         return super.onCreateOptionsMenu(menu);
     }
 
     @Override public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.menu_save:
-                FileUtils.takeScreenShot(linearLayout);
+                FileUtils.takeScreenShot(linearLayout, System.currentTimeMillis() + ".png");
                 break;
         }
         return super.onOptionsItemSelected(item);
