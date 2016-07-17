@@ -10,6 +10,7 @@ import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
@@ -22,6 +23,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import xyz.hanks.note.R;
+import xyz.hanks.note.util.FileUtils;
 import xyz.hanks.note.util.VectorDrawableUtils;
 
 /**
@@ -34,6 +36,7 @@ public class PreviewActivity extends AppCompatActivity {
     private static final String EXTRA_CONTENT = "content";
     List<NoteItem> data = new ArrayList<>();
     private String noteContent = "";
+    private LinearLayout linearLayout;
 
 
     public static void start(Context context, String noteContent) {
@@ -48,6 +51,7 @@ public class PreviewActivity extends AppCompatActivity {
 
         noteContent = getIntent().getStringExtra(EXTRA_CONTENT);
 
+        linearLayout = (LinearLayout) findViewById(R.id.container_layout);
         final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setTitle("预览");
         toolbar.setNavigationIcon(VectorDrawableUtils.getBackDrawable(this));
@@ -105,7 +109,6 @@ public class PreviewActivity extends AppCompatActivity {
         }
 
 
-        LinearLayout linearLayout = (LinearLayout) findViewById(R.id.container_layout);
         LayoutInflater inflater = LayoutInflater.from(this);
         for (int i = 0; i < data.size(); i++) {
             PreviewHolder viewHolder = new PreviewHolder(inflater.inflate(R.layout.item_list_preview, null));
@@ -124,10 +127,16 @@ public class PreviewActivity extends AppCompatActivity {
 
     }
 
+
+    @Override public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_preview,menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
     @Override public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case android.R.id.home:
-                finish();
+            case R.id.menu_save:
+                FileUtils.takeScreenShot(linearLayout);
                 break;
         }
         return super.onOptionsItemSelected(item);
