@@ -15,7 +15,7 @@ public class NoteItem implements RealmModel {
     public static final String OBJECT_ID = "objectId";
 
     @PrimaryKey
-    public int objectId;
+    public String objectId;
     public long createdAt;
     public long updatedAt;
     public boolean favorite;

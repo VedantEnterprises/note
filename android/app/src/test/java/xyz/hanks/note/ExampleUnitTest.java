@@ -4,6 +4,7 @@ import org.junit.Test;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.UUID;
 
 import xyz.hanks.note.util.PrettyDateUtils;
 
@@ -56,5 +57,14 @@ public class ExampleUnitTest {
         System.out.println("date7 = " + PrettyDateUtils.format(date7.getTime()));
         System.out.println("date8 = " + PrettyDateUtils.format(date8.getTime()));
 
+    }
+
+    @Test
+    public void testUUID() throws Exception {
+        //generate random UUIDs
+        UUID idOne = UUID.randomUUID();
+        UUID idTwo = UUID.randomUUID();
+        System.out.println("idOne = " + idOne);
+        System.out.println("idTwo = " + idTwo);
     }
 }

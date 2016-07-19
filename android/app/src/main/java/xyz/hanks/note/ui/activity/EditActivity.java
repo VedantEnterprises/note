@@ -31,6 +31,7 @@ import com.github.ksoichiro.android.observablescrollview.ScrollState;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -53,14 +54,14 @@ public class EditActivity extends AppCompatActivity {
     public static final String ATT_IMAGE_PATTERN_STRING = "<image w=.*? h=.*? describe=.*? name=.*?>";
     private static final String TAG = "........";
     private static final String EXTRA_ID = "note_id";
-    private int ITEM_HEIGHT = 125;
     List<NoteItemView> data = new ArrayList<>();
     List<String> backupData = new ArrayList<>();
+    private int ITEM_HEIGHT = 125;
     private String noteContent = "\n\n";
-//    private String noteContent = "进来看看还有什么惊喜^_^\n" +
-//            "我们支持把便签的文字直接发送到新<image w=858 h=483 describe= name=Note_123.jpg>浪微博，\n\n" +
-//            "同时你再也不用忍受新浪的数字限制了，当文字超过 140 之后，便签会自动生成排版优雅、字体<image w=858 h=223 describe=no one name=Note_453.jpg>精美的图片长微博，希望我们的便签能够让你重新喜欢上不那么碎片的表达。试试点击右上角的小飞机，再点击随后出现的菜单中的 “以图片分享” 将图片分享至你的其他应用。\n" +
-//            "便签内容现在支持分享至新浪长微博同时你再也不用忍受新浪的数字限制了，当文字超过 140 之后，便签同<image w=858 h=383 describe= name=Note_123.jpg>时你再也不用忍受新浪的数字限制了，当文字超过 140 之后，便签同时你再也不用忍受新浪的数字限制了，当文字超过 140 之后，便签。\n";
+    //    private String noteContent = "进来看看还有什么惊喜^_^\n" +
+    //            "我们支持把便签的文字直接发送到新<image w=858 h=483 describe= name=Note_123.jpg>浪微博，\n\n" +
+    //            "同时你再也不用忍受新浪的数字限制了，当文字超过 140 之后，便签会自动生成排版优雅、字体<image w=858 h=223 describe=no one name=Note_453.jpg>精美的图片长微博，希望我们的便签能够让你重新喜欢上不那么碎片的表达。试试点击右上角的小飞机，再点击随后出现的菜单中的 “以图片分享” 将图片分享至你的其他应用。\n" +
+    //            "便签内容现在支持分享至新浪长微博同时你再也不用忍受新浪的数字限制了，当文字超过 140 之后，便签同<image w=858 h=383 describe= name=Note_123.jpg>时你再也不用忍受新浪的数字限制了，当文字超过 140 之后，便签同时你再也不用忍受新浪的数字限制了，当文字超过 140 之后，便签。\n";
     private NoteDetailAdapter noteDetailAdapter;
     private BackgroundAdapter backgroundAdapter;
 
@@ -70,11 +71,15 @@ public class EditActivity extends AppCompatActivity {
     private boolean draggable = false;
     private int lastScrollY = 0;
     private LinearLayoutManager layoutManager;
-    private long noteId = -1;
+    private String noteId = "";
 
-    public static void start(Context context,long noteId) {
+    public static void start(Context context) {
+        start(context, "");
+    }
+
+    public static void start(Context context, String noteId) {
         Intent starter = new Intent(context, EditActivity.class);
-        starter.putExtra(EXTRA_ID,noteId);
+        starter.putExtra(EXTRA_ID, noteId);
         starter.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         context.startActivity(starter);
     }
@@ -106,16 +111,17 @@ public class EditActivity extends AppCompatActivity {
     @Override protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit);
-        if(getIntent().hasExtra(EXTRA_ID)){
-            noteId = getIntent().getLongExtra(EXTRA_ID,-1);
+        if (getIntent().hasExtra(EXTRA_ID)) {
+            noteId = getIntent().getStringExtra(EXTRA_ID);
         }
 
-        if(noteId!=-1){
+        if (!TextUtils.isEmpty(noteId)) {
             Realm realm = Realm.getDefaultInstance();
             NoteItem noteItem = realm.where(NoteItem.class).equalTo(NoteItem.OBJECT_ID, noteId).findFirst();
             if (noteItem != null) {
                 noteContent = noteItem.detail;
             }
+            realm.close();
         }
         setupUI();
         ITEM_HEIGHT = (int) getResources().getDimension(R.dimen.note_detail_item_height);
@@ -242,26 +248,41 @@ public class EditActivity extends AppCompatActivity {
                 finish();
                 break;
             case R.id.menu_preview:
-                final NoteItem tmp = new NoteItem();
-                if(noteId==-1){
-                    tmp.createdAt = System.currentTimeMillis();
-                    tmp.updatedAt = System.currentTimeMillis();
+                measureText();
+                if (backupData.size() <= 0) {
+                    break;
                 }
+                final NoteItem tmp = new NoteItem();
+                if (TextUtils.isEmpty(noteId)) {
+                    tmp.objectId = UUID.randomUUID().toString();
+                    tmp.createdAt = System.currentTimeMillis();
+                }
+                tmp.updatedAt = System.currentTimeMillis();
                 tmp.detail = noteContent;
-                tmp.title = backupData.size()>0 ? backupData.get(0): "";
-                Realm realm = Realm.getDefaultInstance();
-                realm.executeTransaction(new Realm.Transaction() {
-                    @Override public void execute(Realm realm) {
-                        realm.copyToRealmOrUpdate(tmp);
+                tmp.title = "no title";
+                for (String s : backupData) {
+                    if(!TextUtils.isEmpty(s) && !isImage(s)){
+                        tmp.title = s;
+                        break;
                     }
-                });
-                realm.close();
+                }
+                updateNote(tmp);
                 PreviewActivity.start(this, noteContent);
                 break;
         }
 
         return true;
 
+    }
+
+    private void updateNote(final NoteItem tmp) {
+        Realm realm = Realm.getDefaultInstance();
+        realm.executeTransaction(new Realm.Transaction() {
+            @Override public void execute(Realm realm) {
+                realm.copyToRealmOrUpdate(tmp);
+            }
+        });
+        realm.close();
     }
 
     @Override public boolean onCreateOptionsMenu(Menu menu) {
@@ -444,9 +465,9 @@ public class EditActivity extends AppCompatActivity {
                 String s = backupData.get(i);
                 sb.append(s);
 
-//                if (!isImage(s) && i + 1 < backupData.size() && !isImage(backupData.get(i + 1))) {
-//                    sb.append('\n');
-//                }
+                //                if (!isImage(s) && i + 1 < backupData.size() && !isImage(backupData.get(i + 1))) {
+                //                    sb.append('\n');
+                //                }
             }
             noteContent = sb.toString();
             changeToNormalMode();

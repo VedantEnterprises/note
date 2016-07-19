@@ -57,6 +57,7 @@ public class LineTextView extends EditText {
                 }
             }
         });
+
     }
 
     @Override protected void onDraw(Canvas canvas) {
