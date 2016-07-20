@@ -12,9 +12,12 @@ import android.view.View;
 import android.widget.Toast;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 
 import xyz.hanks.note.NoteApp;
 
@@ -22,6 +25,38 @@ import xyz.hanks.note.NoteApp;
  * Created by hanks on 16/6/28.
  */
 public class FileUtils {
+
+    public static String saveImage(String imagePath){
+        File file = new File(imagePath);
+        if (!file.exists()) {
+            return null;
+        }
+        try {
+            String fileName = System.currentTimeMillis()+".png";
+            String outputPath = getProjectImagePath();
+            //create output directory if it doesn't exist
+            File dir = new File (outputPath);
+            if (!dir.exists()) {
+                dir.mkdirs();
+            }
+            InputStream  in = new FileInputStream(imagePath);
+            OutputStream out = new FileOutputStream(outputPath+"/" + fileName);
+            byte[] buffer = new byte[1024];
+            int read;
+            while ((read = in.read(buffer)) != -1) {
+                out.write(buffer, 0, read);
+            }
+            in.close();
+            // write the output file (You have now copied the file)
+            out.flush();
+            out.close();
+            return fileName;
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
 
     public static Bitmap getBitmapFromFile(String name) {
         String filePath = getProjectImagePath() + "/" + name;

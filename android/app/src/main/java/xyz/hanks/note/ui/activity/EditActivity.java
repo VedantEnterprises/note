@@ -43,6 +43,7 @@ import xyz.hanks.note.model.NoteItem;
 import xyz.hanks.note.ui.viewholder.NoteDetailTextViewHolder;
 import xyz.hanks.note.ui.viewholder.NoteDetailViewHolder;
 import xyz.hanks.note.ui.widget.LineTextView;
+import xyz.hanks.note.util.FileUtils;
 import xyz.hanks.note.util.ScreenUtils;
 import xyz.hanks.note.util.VectorDrawableUtils;
 
@@ -291,18 +292,22 @@ public class EditActivity extends AppCompatActivity {
     }
 
     private void insertImage() {
+        int cursorPosition = getCursorPosition();
         GalleryFinal.openGallerySingle(0, new GalleryFinal.OnHanlderResultCallback() {
             @Override public void onHanlderSuccess(int reqeustCode, List<PhotoInfo> resultList) {
-                for (PhotoInfo photoInfo : resultList) {
-                    Log.e(TAG,photoInfo.getPhotoPath());
+                if (resultList.size() > 0) {
+                    String photoPath = resultList.get(0).getPhotoPath();
+                    String fileName = FileUtils.saveImage(photoPath);
+                    if (!TextUtils.isEmpty(fileName)) {
+                        String imageTag = String.format(ATT_IMAGE_TAG,300,400,fileName,fileName);
+                        noteContent = noteContent + imageTag;
+                        calcText();
+                    }
                 }
             }
-
             @Override public void onHanlderFailure(int requestCode, String errorMsg) {
-
             }
         });
-
         /*new AlertDialog.Builder(this)
                 .setTitle("选择照片")
                 .setItems(new String[]{"相机","图库"}, new DialogInterface.OnClickListener() {
@@ -311,6 +316,10 @@ public class EditActivity extends AppCompatActivity {
                     }
                 })
                 .show();*/
+    }
+
+    private int getCursorPosition() {
+        return 0;
     }
 
     @Override public boolean onCreateOptionsMenu(Menu menu) {
