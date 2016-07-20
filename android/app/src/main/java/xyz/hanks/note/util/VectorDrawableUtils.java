@@ -31,4 +31,7 @@ public class VectorDrawableUtils {
     public static Drawable getSettingDrawable(Context context){
         return VectorDrawableCompat.create(context.getResources(), R.drawable.ic_settings_white_24dp, context.getTheme());
     }
+    public static Drawable getImageDrawable(Context context){
+        return VectorDrawableCompat.create(context.getResources(), R.drawable.ic_image_white_24dp, context.getTheme());
+    }
 }

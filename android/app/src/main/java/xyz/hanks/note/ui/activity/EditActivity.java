@@ -289,6 +289,7 @@ public class EditActivity extends AppCompatActivity {
         getMenuInflater().inflate(R.menu.menu_edit, menu);
         menu.findItem(R.id.menu_del).setIcon(VectorDrawableUtils.getDeleteDrawable(this));
         menu.findItem(R.id.menu_preview).setIcon(VectorDrawableUtils.getPreviewDrawable(this));
+        menu.findItem(R.id.menu_img).setIcon(VectorDrawableUtils.getImageDrawable(this));
         return super.onCreateOptionsMenu(menu);
     }
 
