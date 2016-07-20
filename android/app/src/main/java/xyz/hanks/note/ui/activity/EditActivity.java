@@ -35,6 +35,8 @@ import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import cn.finalteam.galleryfinal.GalleryFinal;
+import cn.finalteam.galleryfinal.model.PhotoInfo;
 import io.realm.Realm;
 import xyz.hanks.note.R;
 import xyz.hanks.note.model.NoteItem;
@@ -242,10 +244,23 @@ public class EditActivity extends AppCompatActivity {
         layoutManager.scrollToPositionWithOffset(0, lastScrollY);
     }
 
+    private void updateNote(final NoteItem tmp) {
+        Realm realm = Realm.getDefaultInstance();
+        realm.executeTransaction(new Realm.Transaction() {
+            @Override public void execute(Realm realm) {
+                realm.copyToRealmOrUpdate(tmp);
+            }
+        });
+        realm.close();
+    }
+
     @Override public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
                 finish();
+                break;
+            case R.id.menu_img:
+                insertImage();
                 break;
             case R.id.menu_preview:
                 measureText();
@@ -275,14 +290,27 @@ public class EditActivity extends AppCompatActivity {
 
     }
 
-    private void updateNote(final NoteItem tmp) {
-        Realm realm = Realm.getDefaultInstance();
-        realm.executeTransaction(new Realm.Transaction() {
-            @Override public void execute(Realm realm) {
-                realm.copyToRealmOrUpdate(tmp);
+    private void insertImage() {
+        GalleryFinal.openGallerySingle(0, new GalleryFinal.OnHanlderResultCallback() {
+            @Override public void onHanlderSuccess(int reqeustCode, List<PhotoInfo> resultList) {
+                for (PhotoInfo photoInfo : resultList) {
+                    Log.e(TAG,photoInfo.getPhotoPath());
+                }
+            }
+
+            @Override public void onHanlderFailure(int requestCode, String errorMsg) {
+
             }
         });
-        realm.close();
+
+        /*new AlertDialog.Builder(this)
+                .setTitle("选择照片")
+                .setItems(new String[]{"相机","图库"}, new DialogInterface.OnClickListener() {
+                    @Override public void onClick(DialogInterface dialogInterface, int i) {
+
+                    }
+                })
+                .show();*/
     }
 
     @Override public boolean onCreateOptionsMenu(Menu menu) {
