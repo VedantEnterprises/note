@@ -489,7 +489,7 @@ public class EditActivity extends AppCompatActivity {
                     holder.tv_line.setVisibility(View.INVISIBLE);
                     holder.imgLayout.setVisibility(View.VISIBLE);
                     NoteItemView noteItemView = getNoteItem(str);
-                    //holder.imageView.setImageBitmap(FileUtils.getBitmapFromFile(noteItemView.name));
+                    holder.imageView.setImageBitmap(FileUtils.getBitmapFromFile(noteItemView.name));
                     int itemCount = noteItemView.height % ITEM_HEIGHT == 0 ? noteItemView.height / ITEM_HEIGHT : noteItemView.height / ITEM_HEIGHT + 1;
                     final int finalHeight = itemCount * ITEM_HEIGHT;
                     Log.e(TAG, "ImageView" + finalHeight);
@@ -509,7 +509,7 @@ public class EditActivity extends AppCompatActivity {
                     final NoteDetailViewHolder imageHolder = (NoteDetailViewHolder) viewHolder;
                     imageHolder.tv_line.setVisibility(View.INVISIBLE);
                     imageHolder.imgLayout.setVisibility(View.VISIBLE);
-                    //holder.imageView.setImageBitmap(FileUtils.getBitmapFromFile(noteItemView.name));
+                    imageHolder.imageView.setImageBitmap(FileUtils.getBitmapFromFile(noteItemView.name));
                     int itemCount = noteItemView.height % ITEM_HEIGHT == 0 ? noteItemView.height / ITEM_HEIGHT : noteItemView.height / ITEM_HEIGHT + 1;
                     final int finalHeight = itemCount * ITEM_HEIGHT;
                     Log.e(TAG, "ImageView" + finalHeight);

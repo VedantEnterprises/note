@@ -120,6 +120,7 @@ public class PreviewActivity extends AppCompatActivity {
             } else {
                 viewHolder.tv_line.setVisibility(View.GONE);
                 viewHolder.imgLayout.setVisibility(View.VISIBLE);
+                viewHolder.imageView.setImageBitmap(FileUtils.getBitmapFromFile(noteItem.name));
                 viewHolder.imageView.getLayoutParams().height = noteItem.height;
             }
             linearLayout.addView(viewHolder.rootLayout);
