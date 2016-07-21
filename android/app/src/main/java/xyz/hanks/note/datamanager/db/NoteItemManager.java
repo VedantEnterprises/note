@@ -18,6 +18,7 @@ public class NoteItemManager {
         List<NoteItem> noteItemList = new ArrayList<>();
         for (NoteItem item : results) {
             noteItemList.add(item);
+            System.out.println("item = " + item.toString());
         }
         return noteItemList;
     }

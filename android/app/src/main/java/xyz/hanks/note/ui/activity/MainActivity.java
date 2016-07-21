@@ -50,12 +50,21 @@ public class MainActivity extends BaseActivity {
         EditActivity.start(this);
     }
 
+    @Override protected void onResume() {
+        super.onResume();
+        getData();
+    }
+
     @Override protected Drawable getNavigationIcon() {
         return VectorDrawableUtils.getSettingDrawable(this);
     }
 
     private void getData() {
-        noteList.addAll(NoteItemManager.getNoteItemList());
+        List<NoteItem> noteItemList = NoteItemManager.getNoteItemList();
+        if (noteItemList != null && noteItemList.size() > 0) {
+            noteList.clear();
+            noteList.addAll(noteItemList);
+        }
         adapter.notifyItemRangeChanged(0, noteList.size());
     }
 
@@ -73,7 +82,7 @@ public class MainActivity extends BaseActivity {
         switch (item.getItemId()) {
             case android.R.id.home:
                 CommonActivity.start(this, SettingFragment.class.getName());
-            break;
+                break;
         }
         return super.onOptionsItemSelected(item);
     }

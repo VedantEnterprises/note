@@ -3,6 +3,7 @@ package xyz.hanks.note.model;
 import io.realm.RealmModel;
 import io.realm.annotations.PrimaryKey;
 import io.realm.annotations.RealmClass;
+import io.realm.annotations.Required;
 
 /**
  * 单个笔记
@@ -14,6 +15,7 @@ public class NoteItem implements RealmModel {
     public static final String UPDATED_AT = "updatedAt";
     public static final String OBJECT_ID = "objectId";
 
+    @Required
     @PrimaryKey
     public String objectId;
     public long createdAt;
@@ -25,4 +27,19 @@ public class NoteItem implements RealmModel {
     public String detail;
     public int positionInFolder;
     public int folderId;
+
+    @Override public String toString() {
+        return "NoteItem{" +
+                "objectId='" + objectId + '\'' +
+                ", createdAt=" + createdAt +
+                ", updatedAt=" + updatedAt +
+                ", favorite=" + favorite +
+                ", deleted=" + deleted +
+                ", markdown=" + markdown +
+                ", title='" + title + '\'' +
+                ", detail='" + detail + '\'' +
+                ", positionInFolder=" + positionInFolder +
+                ", folderId=" + folderId +
+                '}';
+    }
 }

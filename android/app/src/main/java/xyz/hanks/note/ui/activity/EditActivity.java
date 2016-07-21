@@ -38,6 +38,7 @@ import java.util.regex.Pattern;
 import cn.finalteam.galleryfinal.GalleryFinal;
 import cn.finalteam.galleryfinal.model.PhotoInfo;
 import io.realm.Realm;
+import io.realm.RealmResults;
 import xyz.hanks.note.R;
 import xyz.hanks.note.model.NoteItem;
 import xyz.hanks.note.ui.viewholder.NoteDetailTextViewHolder;
@@ -260,6 +261,9 @@ public class EditActivity extends AppCompatActivity {
             case android.R.id.home:
                 finish();
                 break;
+            case R.id.menu_del:
+                deleteNote();
+                break;
             case R.id.menu_img:
                 insertImage();
                 break;
@@ -268,16 +272,22 @@ public class EditActivity extends AppCompatActivity {
                 if (backupData.size() <= 0) {
                     break;
                 }
-                final NoteItem tmp = new NoteItem();
+                NoteItem tmp;
                 if (TextUtils.isEmpty(noteId)) {
+                    tmp = new NoteItem();
                     tmp.objectId = UUID.randomUUID().toString();
                     tmp.createdAt = System.currentTimeMillis();
+                } else {
+                    Realm realm = Realm.getDefaultInstance();
+                    NoteItem noteItem = realm.where(NoteItem.class).equalTo(NoteItem.OBJECT_ID, noteId).findFirst();
+                    tmp = realm.copyFromRealm(noteItem);
+                    realm.close();
                 }
                 tmp.updatedAt = System.currentTimeMillis();
                 tmp.detail = noteContent;
                 tmp.title = "no title";
                 for (String s : backupData) {
-                    if(!TextUtils.isEmpty(s) && !isImage(s)){
+                    if (!TextUtils.isEmpty(s) && !isImage(s)) {
                         tmp.title = s;
                         break;
                     }
@@ -291,6 +301,20 @@ public class EditActivity extends AppCompatActivity {
 
     }
 
+    private void deleteNote() {
+        if (!TextUtils.isEmpty(noteId)) {
+            Realm realm = Realm.getDefaultInstance();
+            realm.executeTransaction(new Realm.Transaction() {
+                @Override public void execute(Realm realm) {
+                    RealmResults<NoteItem> noteItems = realm.where(NoteItem.class).equalTo(NoteItem.OBJECT_ID, noteId).findAll();
+                    noteItems.deleteAllFromRealm();
+                }
+            });
+            realm.close();
+            finish();
+        }
+    }
+
     private void insertImage() {
         int cursorPosition = getCursorPosition();
         GalleryFinal.openGallerySingle(0, new GalleryFinal.OnHanlderResultCallback() {
@@ -299,12 +323,13 @@ public class EditActivity extends AppCompatActivity {
                     String photoPath = resultList.get(0).getPhotoPath();
                     String fileName = FileUtils.saveImage(photoPath);
                     if (!TextUtils.isEmpty(fileName)) {
-                        String imageTag = String.format(ATT_IMAGE_TAG,300,400,fileName,fileName);
+                        String imageTag = String.format(ATT_IMAGE_TAG, 300, 400, fileName, fileName);
                         noteContent = noteContent + imageTag;
                         calcText();
                     }
                 }
             }
+
             @Override public void onHanlderFailure(int requestCode, String errorMsg) {
             }
         });
