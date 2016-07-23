@@ -23,6 +23,7 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.github.ksoichiro.android.observablescrollview.ObservableRecyclerView;
 import com.github.ksoichiro.android.observablescrollview.ObservableScrollViewCallbacks;
@@ -256,49 +257,33 @@ public class EditActivity extends AppCompatActivity {
         realm.close();
     }
 
-    @Override public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                finish();
-                break;
-            case R.id.menu_del:
-                deleteNote();
-                break;
-            case R.id.menu_img:
-                insertImage();
-                break;
-            case R.id.menu_preview:
-                measureText();
-                if (backupData.size() <= 0) {
-                    break;
-                }
-                NoteItem tmp;
-                if (TextUtils.isEmpty(noteId)) {
-                    tmp = new NoteItem();
-                    tmp.objectId = UUID.randomUUID().toString();
-                    tmp.createdAt = System.currentTimeMillis();
-                } else {
-                    Realm realm = Realm.getDefaultInstance();
-                    NoteItem noteItem = realm.where(NoteItem.class).equalTo(NoteItem.OBJECT_ID, noteId).findFirst();
-                    tmp = realm.copyFromRealm(noteItem);
-                    realm.close();
-                }
-                tmp.updatedAt = System.currentTimeMillis();
-                tmp.detail = noteContent;
-                tmp.title = "no title";
-                for (String s : backupData) {
-                    if (!TextUtils.isEmpty(s) && !isImage(s)) {
-                        tmp.title = s;
-                        break;
-                    }
-                }
-                updateNote(tmp);
-                PreviewActivity.start(this, noteContent);
-                break;
+    private void saveNote() {
+        measureText();
+        if (backupData.size() <= 0) {
+            return;
         }
-
-        return true;
-
+        NoteItem tmp;
+        if (TextUtils.isEmpty(noteId)) {
+            tmp = new NoteItem();
+            tmp.objectId = UUID.randomUUID().toString();
+            tmp.createdAt = System.currentTimeMillis();
+        } else {
+            Realm realm = Realm.getDefaultInstance();
+            NoteItem noteItem = realm.where(NoteItem.class).equalTo(NoteItem.OBJECT_ID, noteId).findFirst();
+            tmp = realm.copyFromRealm(noteItem);
+            realm.close();
+        }
+        tmp.updatedAt = System.currentTimeMillis();
+        tmp.detail = noteContent;
+        tmp.title = "no title";
+        for (String s : backupData) {
+            if (!TextUtils.isEmpty(s) && !isImage(s)) {
+                tmp.title = s;
+                break;
+            }
+        }
+        updateNote(tmp);
+        Toast.makeText(this,"save success!", Toast.LENGTH_SHORT).show();
     }
 
     private void deleteNote() {
@@ -352,7 +337,29 @@ public class EditActivity extends AppCompatActivity {
         menu.findItem(R.id.menu_del).setIcon(VectorDrawableUtils.getDeleteDrawable(this));
         menu.findItem(R.id.menu_preview).setIcon(VectorDrawableUtils.getPreviewDrawable(this));
         menu.findItem(R.id.menu_img).setIcon(VectorDrawableUtils.getImageDrawable(this));
+        menu.findItem(R.id.menu_save).setIcon(VectorDrawableUtils.getSaveDrawable(this));
         return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                finish();
+                break;
+            case R.id.menu_del:
+                deleteNote();
+                break;
+            case R.id.menu_img:
+                insertImage();
+                break;
+            case R.id.menu_save:
+                saveNote();
+                break;
+            case R.id.menu_preview:
+                PreviewActivity.start(this, noteContent);
+                break;
+        }
+        return true;
     }
 
     private void changeToDragMode() {

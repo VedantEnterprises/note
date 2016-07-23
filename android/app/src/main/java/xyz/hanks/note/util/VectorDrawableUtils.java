@@ -5,6 +5,7 @@ import android.graphics.drawable.Drawable;
 import android.support.graphics.drawable.VectorDrawableCompat;
 
 import xyz.hanks.note.R;
+import xyz.hanks.note.ui.activity.EditActivity;
 
 /**
  * Created by hanks on 2016/7/6.
@@ -32,6 +33,9 @@ public class VectorDrawableUtils {
         return VectorDrawableCompat.create(context.getResources(), R.drawable.ic_settings_white_24dp, context.getTheme());
     }
     public static Drawable getImageDrawable(Context context){
+        return VectorDrawableCompat.create(context.getResources(), R.drawable.ic_image_white_24dp, context.getTheme());
+    }
+    public static Drawable getSaveDrawable(Context context){
         return VectorDrawableCompat.create(context.getResources(), R.drawable.ic_image_white_24dp, context.getTheme());
     }
 }
