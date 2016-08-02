@@ -3,87 +3,85 @@ package xyz.hanks.note.ui.activity;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
+import android.support.v4.app.Fragment;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import xyz.hanks.note.R;
-import xyz.hanks.note.datamanager.db.NoteItemManager;
-import xyz.hanks.note.model.NoteItem;
-import xyz.hanks.note.ui.adapter.NoteAdapter;
+import xyz.hanks.note.ui.fragment.EditFragment;
+import xyz.hanks.note.ui.fragment.MainFragment;
 import xyz.hanks.note.ui.fragment.SettingFragment;
 import xyz.hanks.note.util.VectorDrawableUtils;
 
 public class MainActivity extends BaseActivity {
 
-    private RecyclerView recyclerView;
-    private List<NoteItem> noteList = new ArrayList<>();
-    private NoteAdapter adapter;
     private FloatingActionButton addButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        getSupportFragmentManager()
+                .beginTransaction()
+                .add(R.id.fragment_container, MainFragment.newInstance())
+                .commit();
         setupUI();
-        getData();
+    }
+
+    private void addChildFragment(Fragment fragment) {
+        getSupportFragmentManager()
+                .beginTransaction()
+                .add(R.id.fragment_container, fragment)
+                .addToBackStack(fragment.getClass().getName())
+                .commit();
     }
 
     private void setupUI() {
         addButton = (FloatingActionButton) findViewById(R.id.fab);
-        recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        adapter = NoteAdapter.newInstance(noteList);
-        recyclerView.setAdapter(adapter);
         addButton.setOnClickListener(new View.OnClickListener() {
-            @Override public void onClick(View view) {
+            @Override
+            public void onClick(View view) {
                 addNewNote();
             }
         });
     }
 
     private void addNewNote() {
-        EditActivity.start(this);
+        addChildFragment(EditFragment.newInstance());
     }
 
-    @Override protected void onResume() {
-        super.onResume();
-        getData();
-    }
-
-    @Override protected Drawable getNavigationIcon() {
+    @Override
+    protected Drawable getNavigationIcon() {
         return VectorDrawableUtils.getMenuDrawable(this);
     }
 
-    private void getData() {
-        List<NoteItem> noteItemList = NoteItemManager.getNoteItemList();
-        if (noteItemList != null && noteItemList.size() > 0) {
-            noteList.clear();
-            noteList.addAll(noteItemList);
-        }
-        adapter.notifyItemRangeChanged(0, noteList.size());
-    }
-
-    @Override protected int getLayoutId() {
+    @Override
+    protected int getLayoutId() {
         return R.layout.activity_main;
     }
 
-    @Override public boolean onCreateOptionsMenu(Menu menu) {
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_main, menu);
         menu.findItem(R.id.menu_search).setIcon(VectorDrawableUtils.getSearchDrawable(this));
         return super.onCreateOptionsMenu(menu);
     }
 
-    @Override public boolean onOptionsItemSelected(MenuItem item) {
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
                 CommonActivity.start(this, SettingFragment.class.getName());
                 break;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    public void changeToEditFragment(String objectId) {
+        getSupportFragmentManager()
+                .beginTransaction()
+                .add(R.id.fragment_container, EditFragment.newInstance(objectId))
+                .addToBackStack(EditFragment.class.getName())
+                .commit();
     }
 }

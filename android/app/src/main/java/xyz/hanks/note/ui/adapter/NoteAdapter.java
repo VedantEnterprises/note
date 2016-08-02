@@ -61,10 +61,22 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.NoteItemViewHo
             ivImage = (ImageView) itemView.findViewById(R.id.iv_img);
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override public void onClick(View v) {
-                    EditActivity.start(v.getContext(), data.get(getAdapterPosition()).objectId);
+                    if (onItemClickListener != null) {
+                        onItemClickListener.onClick(v,getAdapterPosition());
+                    }
                 }
             });
         }
 
+    }
+
+    OnItemClickListener onItemClickListener;
+
+    public void setOnItemClickListener(OnItemClickListener onItemClickListener) {
+        this.onItemClickListener = onItemClickListener;
+    }
+
+    public interface OnItemClickListener{
+        void onClick(View v, int adapterPosition);
     }
 }
