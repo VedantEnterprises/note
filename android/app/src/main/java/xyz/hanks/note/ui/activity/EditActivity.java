@@ -63,10 +63,6 @@ public class EditActivity extends AppCompatActivity {
     List<String> backupData = new ArrayList<>();
     private int ITEM_HEIGHT = 125;
     private String noteContent = "\n\n";
-    //    private String noteContent = "进来看看还有什么惊喜^_^\n" +
-    //            "我们支持把便签的文字直接发送到新<image w=858 h=483 describe= name=Note_123.jpg>浪微博，\n\n" +
-    //            "同时你再也不用忍受新浪的数字限制了，当文字超过 140 之后，便签会自动生成排版优雅、字体<image w=858 h=223 describe=no one name=Note_453.jpg>精美的图片长微博，希望我们的便签能够让你重新喜欢上不那么碎片的表达。试试点击右上角的小飞机，再点击随后出现的菜单中的 “以图片分享” 将图片分享至你的其他应用。\n" +
-    //            "便签内容现在支持分享至新浪长微博同时你再也不用忍受新浪的数字限制了，当文字超过 140 之后，便签同<image w=858 h=383 describe= name=Note_123.jpg>时你再也不用忍受新浪的数字限制了，当文字超过 140 之后，便签同时你再也不用忍受新浪的数字限制了，当文字超过 140 之后，便签。\n";
     private NoteDetailAdapter noteDetailAdapter;
     private BackgroundAdapter backgroundAdapter;
 
@@ -168,18 +164,6 @@ public class EditActivity extends AppCompatActivity {
             }
         });
         calcText();
-
-        //        final View activityRootView = findViewById(R.id.activityRoot);
-        //        activityRootView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-        //            @Override
-        //            public void onGlobalLayout() {
-        //                int heightDiff = activityRootView.getRootView().measureText() - activityRootView.measureText();
-        //                if (heightDiff > ScreenUtils.dpToPx(200)) { // if more than 200 dp, it's probably a keyboard...
-        //                    // hide
-        //
-        //                }
-        //            }
-        //        });
     }
 
     private boolean isImage(String str) {

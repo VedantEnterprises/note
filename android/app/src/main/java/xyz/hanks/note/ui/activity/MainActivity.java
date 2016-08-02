@@ -56,7 +56,7 @@ public class MainActivity extends BaseActivity {
     }
 
     @Override protected Drawable getNavigationIcon() {
-        return VectorDrawableUtils.getSettingDrawable(this);
+        return VectorDrawableUtils.getMenuDrawable(this);
     }
 
     private void getData() {
