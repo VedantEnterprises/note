@@ -37,6 +37,7 @@ public class MainFragment extends BaseFragment {
     public static MainFragment newInstance() {
         Bundle args = new Bundle();
         MainFragment fragment = new MainFragment();
+        fragment.setHasOptionsMenu(true);
         fragment.setArguments(args);
         return fragment;
     }
@@ -56,6 +57,10 @@ public class MainFragment extends BaseFragment {
 
 
     private void setupUI() {
+        final Toolbar toolbar = (Toolbar) getActivity().findViewById(R.id.toolbar);
+        toolbar.setTitle(getString(R.string.app_name));
+        toolbar.setNavigationIcon(VectorDrawableUtils.getMenuDrawable(getContext()));
+
         recyclerView = (RecyclerView) getView().findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         adapter = NoteAdapter.newInstance(noteList);
@@ -87,8 +92,8 @@ public class MainFragment extends BaseFragment {
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        super.onCreateOptionsMenu(menu, inflater);
         inflater.inflate(R.menu.menu_main, menu);
+        menu.findItem(R.id.menu_search).setIcon(VectorDrawableUtils.getSearchDrawable(getContext()));
     }
 
     @Override

@@ -1,7 +1,5 @@
 package xyz.hanks.note.ui.fragment;
 
-import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -78,6 +76,7 @@ public class EditFragment extends BaseFragment {
         Bundle args = new Bundle();
         args.putString(EXTRA_ID, noteId);
         EditFragment fragment = new EditFragment();
+        fragment.setHasOptionsMenu(true);
         fragment.setArguments(args);
         return fragment;
     }

@@ -4,14 +4,11 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 
 import xyz.hanks.note.R;
 import xyz.hanks.note.ui.fragment.EditFragment;
 import xyz.hanks.note.ui.fragment.MainFragment;
-import xyz.hanks.note.ui.fragment.SettingFragment;
 import xyz.hanks.note.util.VectorDrawableUtils;
 
 public class MainActivity extends BaseActivity {
@@ -23,7 +20,7 @@ public class MainActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         getSupportFragmentManager()
                 .beginTransaction()
-                .add(R.id.fragment_container, MainFragment.newInstance())
+                .replace(R.id.fragment_container, MainFragment.newInstance())
                 .commit();
         setupUI();
     }
@@ -31,7 +28,8 @@ public class MainActivity extends BaseActivity {
     private void addChildFragment(Fragment fragment) {
         getSupportFragmentManager()
                 .beginTransaction()
-                .add(R.id.fragment_container, fragment)
+                .setCustomAnimations(R.anim.slide_in_right_scale, R.anim.slide_out_left,R.anim.slide_in_left,R.anim.slide_out_right)
+                .replace(R.id.fragment_container, fragment)
                 .addToBackStack(fragment.getClass().getName())
                 .commit();
     }
@@ -60,27 +58,11 @@ public class MainActivity extends BaseActivity {
         return R.layout.activity_main;
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        menu.findItem(R.id.menu_search).setIcon(VectorDrawableUtils.getSearchDrawable(this));
-        return super.onCreateOptionsMenu(menu);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                CommonActivity.start(this, SettingFragment.class.getName());
-                break;
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
     public void changeToEditFragment(String objectId) {
         getSupportFragmentManager()
                 .beginTransaction()
-                .add(R.id.fragment_container, EditFragment.newInstance(objectId))
+                .setCustomAnimations(R.anim.slide_in_right_scale, R.anim.slide_out_left,R.anim.slide_in_left,R.anim.slide_out_right)
+                .replace(R.id.fragment_container, EditFragment.newInstance(objectId))
                 .addToBackStack(EditFragment.class.getName())
                 .commit();
     }
