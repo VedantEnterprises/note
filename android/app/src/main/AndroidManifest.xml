@@ -12,6 +12,7 @@
     android:supportsRtl="true"
     android:theme="@style/AppTheme">
     <activity android:name=".ui.activity.MainActivity"
+              android:windowSoftInputMode="adjustResize"
               android:label="@string/mainTitle">
       <intent-filter>
         <action android:name="android.intent.action.MAIN"/>
@@ -19,13 +20,9 @@
         <category android:name="android.intent.category.LAUNCHER"/>
       </intent-filter>
     </activity>
-    <activity android:name=".ui.activity.EditActivity"
-              android:label="@string/editTitle"
-              android:theme="@style/EditActivityTheme"
-              android:windowSoftInputMode="adjustResize"/>
     <activity android:name=".ui.activity.PreviewActivity"
               android:label="@string/previewTitle"
-              android:windowSoftInputMode="adjustResize"/>
+              android:windowSoftInputMode="adjustPan"/>
     <activity android:name=".ui.activity.CommonActivity"/>
   </application>
 

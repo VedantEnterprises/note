@@ -5,7 +5,6 @@ import android.graphics.drawable.Drawable;
 import android.support.graphics.drawable.VectorDrawableCompat;
 
 import xyz.hanks.note.R;
-import xyz.hanks.note.ui.activity.EditActivity;
 
 /**
  * Created by hanks on 2016/7/6.

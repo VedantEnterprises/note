@@ -11,7 +11,6 @@ import java.util.List;
 
 import xyz.hanks.note.R;
 import xyz.hanks.note.model.NoteItem;
-import xyz.hanks.note.ui.activity.EditActivity;
 import xyz.hanks.note.util.PrettyDateUtils;
 
 /**
