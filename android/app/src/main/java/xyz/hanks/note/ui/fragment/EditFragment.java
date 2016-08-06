@@ -1,8 +1,11 @@
 package xyz.hanks.note.ui.fragment;
 
+import android.graphics.Rect;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -18,6 +21,7 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -71,6 +75,23 @@ public class EditFragment extends BaseFragment {
     private int lastScrollY = 0;
     private LinearLayoutManager layoutManager;
     private String noteId = "";
+    private FloatingActionButton floatingActionButton;
+    private View rootView;
+    private ViewTreeObserver.OnGlobalLayoutListener layoutListener = new ViewTreeObserver.OnGlobalLayoutListener() {
+        @Override
+        public void onGlobalLayout() {
+            Rect r = new Rect();
+            //r will be populated with the coordinates of your view that area still visible.
+            rootView.getWindowVisibleDisplayFrame(r);
+
+            int heightDiff = rootView.getRootView().getHeight() - (r.bottom - r.top);
+            if (heightDiff > ScreenUtils.dpToPx(100)) { // if more than 100 pixels, its probably a keyboard...
+                floatingActionButton.setImageDrawable(VectorDrawableUtils.getSaveDrawable(getContext()));
+            } else {
+                floatingActionButton.setImageDrawable(VectorDrawableUtils.getPreviewDrawable(getContext()));
+            }
+        }
+    };
 
     public static EditFragment newInstance(String noteId) {
         Bundle args = new Bundle();
@@ -82,7 +103,7 @@ public class EditFragment extends BaseFragment {
     }
 
     public static EditFragment newInstance() {
-       return newInstance("");
+        return newInstance("");
     }
 
     public void measureText() {
@@ -112,13 +133,13 @@ public class EditFragment extends BaseFragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.activity_edit,container,false);
+        return inflater.inflate(R.layout.activity_edit, container, false);
     }
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        noteId = getArguments().getString(EXTRA_ID,"");
+        noteId = getArguments().getString(EXTRA_ID, "");
         if (!TextUtils.isEmpty(noteId)) {
             Realm realm = Realm.getDefaultInstance();
             NoteItem noteItem = realm.where(NoteItem.class).equalTo(NoteItem.OBJECT_ID, noteId).findFirst();
@@ -132,6 +153,8 @@ public class EditFragment extends BaseFragment {
     }
 
     private void setupUI() {
+        floatingActionButton = (FloatingActionButton) getActivity().findViewById(R.id.fab);
+
         final Toolbar toolbar = (Toolbar) getActivity().findViewById(R.id.toolbar);
         toolbar.setTitle("编辑");
         toolbar.setNavigationIcon(VectorDrawableUtils.getBackDrawable(getContext()));
@@ -166,6 +189,23 @@ public class EditFragment extends BaseFragment {
             }
         });
         calcText();
+
+        rootView = getView().findViewById(R.id.edit_root_layout);
+        rootView.getViewTreeObserver().addOnGlobalLayoutListener(layoutListener);
+    }
+
+    @Override public void onDestroyView() {
+        super.onDestroyView();
+        if (floatingActionButton != null) {
+            floatingActionButton.setImageDrawable(VectorDrawableUtils.getAddDrawable(getContext()));
+        }
+        if (rootView != null) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                rootView.getViewTreeObserver().removeOnGlobalLayoutListener(layoutListener);
+            } else {
+                rootView.getViewTreeObserver().removeGlobalOnLayoutListener(layoutListener);
+            }
+        }
     }
 
     private boolean isImage(String str) {
@@ -269,7 +309,7 @@ public class EditFragment extends BaseFragment {
             }
         }
         updateNote(tmp);
-        Toast.makeText(getContext(),"save success!", Toast.LENGTH_SHORT).show();
+        Toast.makeText(getContext(), "save success!", Toast.LENGTH_SHORT).show();
     }
 
     private void deleteNote() {
