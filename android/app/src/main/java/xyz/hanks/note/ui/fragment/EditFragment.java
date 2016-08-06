@@ -31,6 +31,9 @@ import com.github.ksoichiro.android.observablescrollview.ObservableRecyclerView;
 import com.github.ksoichiro.android.observablescrollview.ObservableScrollViewCallbacks;
 import com.github.ksoichiro.android.observablescrollview.ScrollState;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -43,6 +46,8 @@ import cn.finalteam.galleryfinal.model.PhotoInfo;
 import io.realm.Realm;
 import io.realm.RealmResults;
 import xyz.hanks.note.R;
+import xyz.hanks.note.constant.Constants;
+import xyz.hanks.note.event.FabClickEvent;
 import xyz.hanks.note.model.NoteItem;
 import xyz.hanks.note.ui.activity.PreviewActivity;
 import xyz.hanks.note.ui.viewholder.NoteDetailTextViewHolder;
@@ -75,7 +80,7 @@ public class EditFragment extends BaseFragment {
     private int lastScrollY = 0;
     private LinearLayoutManager layoutManager;
     private String noteId = "";
-    private FloatingActionButton floatingActionButton;
+    private FloatingActionButton fab;
     private View rootView;
     private ViewTreeObserver.OnGlobalLayoutListener layoutListener = new ViewTreeObserver.OnGlobalLayoutListener() {
         @Override
@@ -86,9 +91,11 @@ public class EditFragment extends BaseFragment {
 
             int heightDiff = rootView.getRootView().getHeight() - (r.bottom - r.top);
             if (heightDiff > ScreenUtils.dpToPx(100)) { // if more than 100 pixels, its probably a keyboard...
-                floatingActionButton.setImageDrawable(VectorDrawableUtils.getSaveDrawable(getContext()));
+                fab.setTag(Constants.FabTag.SAVE);
+                fab.setImageDrawable(VectorDrawableUtils.getSaveDrawable(getContext()));
             } else {
-                floatingActionButton.setImageDrawable(VectorDrawableUtils.getPreviewDrawable(getContext()));
+                fab.setTag(Constants.FabTag.PREVIEW);
+                fab.setImageDrawable(VectorDrawableUtils.getPreviewDrawable(getContext()));
             }
         }
     };
@@ -133,6 +140,7 @@ public class EditFragment extends BaseFragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        EventBus.getDefault().register(this);
         return inflater.inflate(R.layout.activity_edit, container, false);
     }
 
@@ -153,7 +161,7 @@ public class EditFragment extends BaseFragment {
     }
 
     private void setupUI() {
-        floatingActionButton = (FloatingActionButton) getActivity().findViewById(R.id.fab);
+        fab = (FloatingActionButton) getActivity().findViewById(R.id.fab);
 
         final Toolbar toolbar = (Toolbar) getActivity().findViewById(R.id.toolbar);
         toolbar.setTitle("编辑");
@@ -196,8 +204,9 @@ public class EditFragment extends BaseFragment {
 
     @Override public void onDestroyView() {
         super.onDestroyView();
-        if (floatingActionButton != null) {
-            floatingActionButton.setImageDrawable(VectorDrawableUtils.getAddDrawable(getContext()));
+        if (fab != null) {
+            fab.setTag(Constants.FabTag.ADD);
+            fab.setImageDrawable(VectorDrawableUtils.getAddDrawable(getContext()));
         }
         if (rootView != null) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
@@ -284,6 +293,7 @@ public class EditFragment extends BaseFragment {
     }
 
     private void saveNote() {
+        hideKeyboard();
         measureText();
         if (backupData.size() <= 0) {
             return;
@@ -367,6 +377,14 @@ public class EditFragment extends BaseFragment {
         menu.findItem(R.id.menu_save).setIcon(VectorDrawableUtils.getSaveDrawable(getContext()));
     }
 
+    @Subscribe
+    public void onEvent(FabClickEvent event) {
+        if (Constants.FabTag.SAVE.equals(event.fab.getTag())) {
+            saveNote();
+        } else if (Constants.FabTag.PREVIEW.equals(event.fab.getTag())) {
+            PreviewActivity.start(getContext(), noteContent);
+        }
+    }
 
     @Override public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
@@ -383,6 +401,7 @@ public class EditFragment extends BaseFragment {
                 saveNote();
                 break;
             case R.id.menu_preview:
+
                 PreviewActivity.start(getContext(), noteContent);
                 break;
         }
