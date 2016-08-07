@@ -21,8 +21,7 @@
       </intent-filter>
     </activity>
     <activity android:name=".ui.activity.PreviewActivity"
-              android:label="@string/previewTitle"
-              android:windowSoftInputMode="adjustPan"/>
+              android:label="@string/previewTitle"/>
     <activity android:name=".ui.activity.CommonActivity"/>
   </application>
 

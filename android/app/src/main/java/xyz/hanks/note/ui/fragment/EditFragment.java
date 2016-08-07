@@ -382,7 +382,7 @@ public class EditFragment extends BaseFragment {
         if (Constants.FabTag.SAVE.equals(event.fab.getTag())) {
             saveNote();
         } else if (Constants.FabTag.PREVIEW.equals(event.fab.getTag())) {
-            PreviewActivity.start(getContext(), noteContent);
+            PreviewActivity.start(getActivity(), noteContent);
         }
     }
 
