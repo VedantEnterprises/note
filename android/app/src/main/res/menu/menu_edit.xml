@@ -11,14 +11,4 @@
         android:orderInCategory="2"
         app:showAsAction="ifRoom"
         android:title="图片"/>
-    <item
-        android:id="@+id/menu_save"
-        android:orderInCategory="90"
-        app:showAsAction="ifRoom"
-        android:title="保存"/>
-    <item
-        android:id="@+id/menu_preview"
-        android:orderInCategory="90"
-        app:showAsAction="ifRoom"
-        android:title="预览"/>
 </menu>

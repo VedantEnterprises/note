@@ -372,9 +372,7 @@ public class EditFragment extends BaseFragment {
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.menu_edit, menu);
         menu.findItem(R.id.menu_del).setIcon(VectorDrawableUtils.getDeleteDrawable(getContext()));
-        menu.findItem(R.id.menu_preview).setIcon(VectorDrawableUtils.getPreviewDrawable(getContext()));
         menu.findItem(R.id.menu_img).setIcon(VectorDrawableUtils.getImageDrawable(getContext()));
-        menu.findItem(R.id.menu_save).setIcon(VectorDrawableUtils.getSaveDrawable(getContext()));
     }
 
     @Subscribe
@@ -396,13 +394,6 @@ public class EditFragment extends BaseFragment {
                 break;
             case R.id.menu_img:
                 insertImage();
-                break;
-            case R.id.menu_save:
-                saveNote();
-                break;
-            case R.id.menu_preview:
-
-                PreviewActivity.start(getContext(), noteContent);
                 break;
         }
         return true;

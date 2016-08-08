@@ -17,6 +17,7 @@
   <string name="today">今天</string>
   <string name="date_format">M月d日 HH:mm</string>
   <string name="year_format">yyyy年 M月d日 HH:mm</string>
+  <string name="save">保存</string>
 
 
 </resources>

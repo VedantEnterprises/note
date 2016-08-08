@@ -5,5 +5,5 @@
         android:id="@+id/menu_save"
         android:orderInCategory="90"
         app:showAsAction="ifRoom"
-        android:title="save"/>
+        android:title="@string/save"/>
 </menu>
