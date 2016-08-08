@@ -7,7 +7,7 @@
     android:id="@+id/et_note_item"
     android:layout_width="match_parent"
     android:layout_height="@dimen/note_detail_item_height"
-    android:background="@drawable/note_paper_middle"
+    android:background="@drawable/item_bg"
     android:gravity="center_vertical"
     android:paddingLeft="8dp"
     android:paddingRight="12dp"
