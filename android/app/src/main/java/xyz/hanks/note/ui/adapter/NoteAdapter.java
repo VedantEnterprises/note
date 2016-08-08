@@ -4,7 +4,6 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.List;
@@ -18,6 +17,7 @@ import xyz.hanks.note.util.PrettyDateUtils;
  */
 public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.NoteItemViewHolder> {
 
+    OnItemClickListener onItemClickListener;
     private List<NoteItem> data;
 
     private NoteAdapter(List<NoteItem> data) {
@@ -28,54 +28,59 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.NoteItemViewHo
         return new NoteAdapter(data);
     }
 
-    @Override public NoteItemViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    @Override
+    public NoteItemViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_list_note, parent, false);
         return new NoteItemViewHolder(view);
     }
 
-    @Override public void onBindViewHolder(NoteItemViewHolder holder, int position) {
+    @Override
+    public void onBindViewHolder(NoteItemViewHolder holder, int position) {
         // holder.cbFavorite.setChecked(true);
         NoteItem item = data.get(position);
-        holder.ivImage.setVisibility(View.GONE);
+        holder.ivImage.setText(item.detail.length() > 0 ? item.detail.substring(0, 1) : "无");
         holder.tvModifyTime.setText(PrettyDateUtils.format(item.createdAt));
-        holder.tvNoteDetail.setText(item.title);
+        holder.tvTitle.setText(item.title);
+        holder.tvNoteDetail.setText(item.detail.length() > 100 ? item.detail.substring(0, 100) : item.detail);
     }
 
-    @Override public int getItemCount() {
+    @Override
+    public int getItemCount() {
         return data == null ? 0 : data.size();
     }
-
-    class NoteItemViewHolder extends RecyclerView.ViewHolder {
-
-        public TextView tvModifyTime;
-        public TextView tvNoteDetail;
-        public View cbFavorite;
-        public ImageView ivImage;
-
-        public NoteItemViewHolder(View itemView) {
-            super(itemView);
-            tvModifyTime = (TextView) itemView.findViewById(R.id.tv_modify_time);
-            tvNoteDetail = (TextView) itemView.findViewById(R.id.tv_note_detail);
-            cbFavorite = itemView.findViewById(R.id.cb_favorite);
-            ivImage = (ImageView) itemView.findViewById(R.id.iv_img);
-            itemView.setOnClickListener(new View.OnClickListener() {
-                @Override public void onClick(View v) {
-                    if (onItemClickListener != null) {
-                        onItemClickListener.onClick(v,getAdapterPosition());
-                    }
-                }
-            });
-        }
-
-    }
-
-    OnItemClickListener onItemClickListener;
 
     public void setOnItemClickListener(OnItemClickListener onItemClickListener) {
         this.onItemClickListener = onItemClickListener;
     }
 
-    public interface OnItemClickListener{
+    public interface OnItemClickListener {
         void onClick(View v, int adapterPosition);
+    }
+
+    class NoteItemViewHolder extends RecyclerView.ViewHolder {
+
+        public TextView tvModifyTime;
+        public TextView tvTitle;
+        public TextView tvNoteDetail;
+        public View cbFavorite;
+        public TextView ivImage;
+
+        public NoteItemViewHolder(View itemView) {
+            super(itemView);
+            tvModifyTime = (TextView) itemView.findViewById(R.id.tv_modify_time);
+            tvTitle = (TextView) itemView.findViewById(R.id.tv_title);
+            tvNoteDetail = (TextView) itemView.findViewById(R.id.tv_note_detail);
+            cbFavorite = itemView.findViewById(R.id.cb_favorite);
+            ivImage = (TextView) itemView.findViewById(R.id.iv_img);
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (onItemClickListener != null) {
+                        onItemClickListener.onClick(v, getAdapterPosition());
+                    }
+                }
+            });
+        }
+
     }
 }
