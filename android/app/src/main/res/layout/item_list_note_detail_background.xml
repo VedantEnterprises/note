@@ -1,17 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/note_detail_item_height"
-                android:orientation="vertical">
-  <TextView
-    android:id="@+id/et_note_item"
     android:layout_width="match_parent"
     android:layout_height="@dimen/note_detail_item_height"
-    android:background="@drawable/item_bg"
-    android:gravity="center_vertical"
-    android:paddingLeft="8dp"
-    android:paddingRight="12dp"
-    android:text=""
-    android:textColor="@color/textColor1"
-    android:textSize="16dp"/>
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/et_note_item"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/note_detail_item_height"
+        android:background="@drawable/item_bg"
+        android:gravity="center_vertical"
+        android:paddingLeft="8dp"
+        android:paddingRight="12dp"
+        android:text=""
+        android:textColor="@color/textColor1"
+        android:textSize="16dp" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1px"
+        android:background="@color/text_line_divider" />
 </RelativeLayout>

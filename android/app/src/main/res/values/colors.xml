@@ -9,6 +9,7 @@
     <color name="textColor3">#5E5F5F</color>
 
     <color name="divider">#CECECF</color>
+    <color name="text_line_divider">#efefef</color>
 
     <color name="windowBackgroundColor">#DBDCDC</color>
     <color name="navigationColor">#00DBDCDC</color>

@@ -103,6 +103,6 @@ public class MainFragment extends BaseFragment {
                 CommonActivity.start(getContext(), SettingFragment.class.getName());
                 break;
         }
-        return super.onOptionsItemSelected(item);
+        return true;
     }
 }
