@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.MenuItem;
 
 import xyz.hanks.note.R;
 import xyz.hanks.note.util.VectorDrawableUtils;
@@ -35,12 +34,4 @@ public abstract class BaseActivity extends AppCompatActivity {
         return VectorDrawableUtils.getMenuDrawable(this);
     }
 
-    @Override public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                finish();
-                break;
-        }
-        return super.onOptionsItemSelected(item);
-    }
 }
