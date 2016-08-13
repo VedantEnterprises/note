@@ -8,6 +8,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import butterknife.ButterKnife;
+import butterknife.OnClick;
+import butterknife.Unbinder;
 import xyz.hanks.note.R;
 import xyz.hanks.note.util.VectorDrawableUtils;
 
@@ -15,6 +18,8 @@ import xyz.hanks.note.util.VectorDrawableUtils;
  * Created by hanks on 16/7/14.
  */
 public class SettingFragment extends Fragment {
+
+    private Unbinder unbinder;
 
     public static SettingFragment newInstance() {
         Bundle args = new Bundle();
@@ -28,41 +33,33 @@ public class SettingFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_setting, container, false);
         getActivity().setTitle("设置");
         ((Toolbar) getActivity().findViewById(R.id.toolbar)).setNavigationIcon(VectorDrawableUtils.getBackDrawable(getContext()));
+        unbinder = ButterKnife.bind(this, view);
         return view;
     }
 
-    @Override public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-        view.findViewById(R.id.tv_update).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                checkUpdate();
-            }
-        });
-
-        view.findViewById(R.id.tv_share).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                shareApp();
-            }
-        });
-
-        view.findViewById(R.id.tv_feedback).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                feedback();
-            }
-        });
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        if (unbinder != null) {
+            unbinder.unbind();
+        }
     }
 
-    private void feedback() {
+    @OnClick(R.id.tv_feedback)
+    public void feedback() {
 
     }
 
-    private void checkUpdate() {
+    @OnClick(R.id.tv_update)
+    public void checkUpdate() {
     }
 
-    private void shareApp() {
+    @OnClick(R.id.tv_share)
+    public void shareApp() {
+
+    }
+    @OnClick(R.id.tv_market)
+    public void launchAppMarket() {
 
     }
 }
