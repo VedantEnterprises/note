@@ -33,5 +33,36 @@ public class SettingFragment extends Fragment {
 
     @Override public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        view.findViewById(R.id.tv_update).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                checkUpdate();
+            }
+        });
+
+        view.findViewById(R.id.tv_share).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                shareApp();
+            }
+        });
+
+        view.findViewById(R.id.tv_feedback).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                feedback();
+            }
+        });
+    }
+
+    private void feedback() {
+
+    }
+
+    private void checkUpdate() {
+    }
+
+    private void shareApp() {
+
     }
 }
