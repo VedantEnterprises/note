@@ -6,9 +6,9 @@
     android:fitsSystemWindows="true">
 
     <LinearLayout
-        android:descendantFocusability="afterDescendants"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:descendantFocusability="afterDescendants"
         android:orientation="vertical">
 
         <android.support.v7.widget.Toolbar
@@ -16,17 +16,23 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@color/colorPrimary"
-            android:elevation="2dp"
             android:fitsSystemWindows="true"
             android:minHeight="?attr/actionBarSize"
             app:subtitleTextAppearance="@style/ToolbarSubtitleAppearance"
             app:theme="@style/ThemeOverlay.AppCompat.Dark" />
 
         <FrameLayout
-            android:id="@+id/fragment_container"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
+
+            <include layout="@layout/include_shadow_top" />
+
+            <FrameLayout
+                android:id="@+id/fragment_container"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
         </FrameLayout>
+
     </LinearLayout>
 
 
