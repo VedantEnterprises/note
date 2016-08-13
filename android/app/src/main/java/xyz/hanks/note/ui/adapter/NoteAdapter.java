@@ -1,5 +1,7 @@
 package xyz.hanks.note.ui.adapter;
 
+import android.graphics.drawable.ShapeDrawable;
+import android.graphics.drawable.shapes.OvalShape;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -38,7 +40,7 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.NoteItemViewHo
     public void onBindViewHolder(NoteItemViewHolder holder, int position) {
         // holder.cbFavorite.setChecked(true);
         NoteItem item = data.get(position);
-        holder.ivImage.setText(item.detail.length() > 0 ? item.detail.substring(0, 1) : "无");
+        holder.ivImage.setText(item.detail.length() > 0 ? item.detail.substring(0, 1).toUpperCase() : "无");
         holder.tvModifyTime.setText(PrettyDateUtils.format(item.createdAt));
         holder.tvTitle.setText(item.title);
         holder.tvNoteDetail.setText(item.detail.length() > 100 ? item.detail.substring(0, 100) : item.detail);
