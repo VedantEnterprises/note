@@ -7,7 +7,7 @@
                                          android:layout_width="match_parent"
                                          android:layout_height="wrap_content"
                                          android:background="@null"
-                                         android:paddingLeft="30dp"
+                                         android:paddingLeft="34dp"
                                          android:paddingRight="12dp"
                                          android:textCursorDrawable="@drawable/text_cursor"
                                          android:focusableInTouchMode="true"

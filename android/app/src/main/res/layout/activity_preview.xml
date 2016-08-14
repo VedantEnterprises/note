@@ -27,7 +27,7 @@
         <LinearLayout android:id="@+id/container_layout"
                       android:layout_width="match_parent"
                       android:layout_height="wrap_content"
-                      android:background="@drawable/weibo_background_nosignature"
+                      android:background="@drawable/preview_bg"
                       android:elevation="2dp"
                       android:orientation="vertical"
                       android:paddingBottom="60dp"

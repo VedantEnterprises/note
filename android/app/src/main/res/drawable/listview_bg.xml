@@ -2,6 +2,6 @@
 <bitmap
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:dither="true"
-    android:src="@drawable/note_paper_middle"
+    android:src="@drawable/item_bg"
     android:tileMode="repeat"
     />
