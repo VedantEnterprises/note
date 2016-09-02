@@ -1,5 +1,7 @@
 package xyz.hanks.note.ui.fragment;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.graphics.Rect;
 import android.os.Build;
 import android.os.Bundle;
@@ -41,14 +43,14 @@ import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import cn.finalteam.galleryfinal.GalleryFinal;
-import cn.finalteam.galleryfinal.model.PhotoInfo;
+import hanks.com.gallery.HGallery;
 import io.realm.Realm;
 import io.realm.RealmResults;
 import xyz.hanks.note.R;
 import xyz.hanks.note.constant.Constants;
 import xyz.hanks.note.event.FabClickEvent;
 import xyz.hanks.note.model.NoteItem;
+import xyz.hanks.note.ui.GlideImageLoader;
 import xyz.hanks.note.ui.activity.PreviewActivity;
 import xyz.hanks.note.ui.viewholder.NoteDetailTextViewHolder;
 import xyz.hanks.note.ui.viewholder.NoteDetailViewHolder;
@@ -190,10 +192,12 @@ public class EditFragment extends BaseFragment {
                 lastScrollY = -scrollY;
             }
 
-            @Override public void onDownMotionEvent() {
+            @Override
+            public void onDownMotionEvent() {
             }
 
-            @Override public void onUpOrCancelMotionEvent(ScrollState scrollState) {
+            @Override
+            public void onUpOrCancelMotionEvent(ScrollState scrollState) {
             }
         });
         calcText();
@@ -202,7 +206,8 @@ public class EditFragment extends BaseFragment {
         rootView.getViewTreeObserver().addOnGlobalLayoutListener(layoutListener);
     }
 
-    @Override public void onDestroyView() {
+    @Override
+    public void onDestroyView() {
         super.onDestroyView();
         if (fab != null) {
             fab.setTag(Constants.FabTag.ADD);
@@ -285,7 +290,8 @@ public class EditFragment extends BaseFragment {
     private void updateNote(final NoteItem tmp) {
         Realm realm = Realm.getDefaultInstance();
         realm.executeTransaction(new Realm.Transaction() {
-            @Override public void execute(Realm realm) {
+            @Override
+            public void execute(Realm realm) {
                 realm.copyToRealmOrUpdate(tmp);
             }
         });
@@ -326,7 +332,8 @@ public class EditFragment extends BaseFragment {
         if (!TextUtils.isEmpty(noteId)) {
             Realm realm = Realm.getDefaultInstance();
             realm.executeTransaction(new Realm.Transaction() {
-                @Override public void execute(Realm realm) {
+                @Override
+                public void execute(Realm realm) {
                     RealmResults<NoteItem> noteItems = realm.where(NoteItem.class).equalTo(NoteItem.OBJECT_ID, noteId).findAll();
                     noteItems.deleteAllFromRealm();
                 }
@@ -338,30 +345,22 @@ public class EditFragment extends BaseFragment {
 
     private void insertImage() {
         int cursorPosition = getCursorPosition();
-        GalleryFinal.openGallerySingle(0, new GalleryFinal.OnHanlderResultCallback() {
-            @Override public void onHanlderSuccess(int reqeustCode, List<PhotoInfo> resultList) {
-                if (resultList.size() > 0) {
-                    String photoPath = resultList.get(0).getPhotoPath();
-                    String fileName = FileUtils.saveImage(photoPath);
-                    if (!TextUtils.isEmpty(fileName)) {
-                        String imageTag = String.format(ATT_IMAGE_TAG, 300, 400, fileName, fileName);
-                        noteContent = noteContent + imageTag;
-                        calcText();
-                    }
-                }
-            }
+        HGallery.init(getContext(),new GlideImageLoader());
+        HGallery.start(getActivity(), 0x222);
+    }
 
-            @Override public void onHanlderFailure(int requestCode, String errorMsg) {
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == Activity.RESULT_OK) {
+            String photoPath = data.getStringExtra(HGallery.EXTRA_PATH);
+            String fileName = FileUtils.saveImage(photoPath);
+            if (!TextUtils.isEmpty(fileName)) {
+                String imageTag = String.format(ATT_IMAGE_TAG, 300, 400, fileName, fileName);
+                noteContent = noteContent + imageTag;
+                calcText();
             }
-        });
-        /*new AlertDialog.Builder(this)
-                .setTitle("选择照片")
-                .setItems(new String[]{"相机","图库"}, new DialogInterface.OnClickListener() {
-                    @Override public void onClick(DialogInterface dialogInterface, int i) {
-
-                    }
-                })
-                .show();*/
+        }
     }
 
     private int getCursorPosition() {
@@ -384,7 +383,8 @@ public class EditFragment extends BaseFragment {
         }
     }
 
-    @Override public boolean onOptionsItemSelected(MenuItem item) {
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
                 getFragmentManager().popBackStack();
@@ -449,19 +449,23 @@ public class EditFragment extends BaseFragment {
 
     // 背景
     class BackgroundAdapter extends BaseAdapter {
-        @Override public int getCount() {
+        @Override
+        public int getCount() {
             return Integer.MAX_VALUE;
         }
 
-        @Override public Object getItem(int i) {
+        @Override
+        public Object getItem(int i) {
             return null;
         }
 
-        @Override public long getItemId(int i) {
+        @Override
+        public long getItemId(int i) {
             return 0;
         }
 
-        @Override public View getView(int position, View convertView, ViewGroup parent) {
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
             if (convertView == null) {
                 convertView = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_list_note_detail_background, parent, false);
             }
@@ -493,7 +497,8 @@ public class EditFragment extends BaseFragment {
 
                     }
 
-                    @Override public void afterTextChanged(Editable var1) {
+                    @Override
+                    public void afterTextChanged(Editable var1) {
 
                     }
                 });
@@ -501,7 +506,8 @@ public class EditFragment extends BaseFragment {
             } else {
                 NoteDetailViewHolder noteDetailViewHolder = NoteDetailViewHolder.newInstance(parent);
                 noteDetailViewHolder.setListener(new NoteDetailViewHolder.OnImageHandleTouchListener() {
-                    @Override public boolean onTouch(View view, MotionEvent motionEvent) {
+                    @Override
+                    public boolean onTouch(View view, MotionEvent motionEvent) {
                         if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
                             changeToDragMode();
                         }
@@ -512,7 +518,8 @@ public class EditFragment extends BaseFragment {
             }
         }
 
-        @Override public int getItemViewType(int position) {
+        @Override
+        public int getItemViewType(int position) {
             if (draggable) {
                 return 0;
             }
@@ -563,7 +570,8 @@ public class EditFragment extends BaseFragment {
             }
         }
 
-        @Override public int getItemCount() {
+        @Override
+        public int getItemCount() {
             return draggable ? backupData.size() : data.size();
         }
 
@@ -622,7 +630,8 @@ public class EditFragment extends BaseFragment {
 
         }
 
-        @Override public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
+        @Override
+        public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
 
         }
 
