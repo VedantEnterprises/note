@@ -39,13 +39,13 @@ dependencies {
 
     compile fileTree(include: ['*.jar'], dir: 'libs')
     testCompile 'junit:junit:4.12'
-    compile project(':gallery-library')
     compile 'com.github.bumptech.glide:glide:3.7.0'
     compile 'com.android.support:appcompat-v7:24.0.0'
     compile 'com.android.support:recyclerview-v7:24.0.0'
     compile 'com.github.ksoichiro:android-observablescrollview:1.6.0'
     compile 'com.android.support:design:24.0.0'
     compile 'org.greenrobot:eventbus:3.0.0'
+    compile 'com.yalantis:ucrop:2.1.2'
     compile 'com.jakewharton:butterknife:8.2.1'
     apt 'com.jakewharton:butterknife-compiler:8.2.1'
 }

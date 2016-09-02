@@ -11,7 +11,7 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.SimpleTarget;
 
-import hanks.com.gallery.base.HImageLoader;
+import xyz.hanks.note.ui.widget.gallery.HImageLoader;
 
 /**
  * Created by hanks on 16/9/2.

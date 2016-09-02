@@ -43,7 +43,6 @@ import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import hanks.com.gallery.HGallery;
 import io.realm.Realm;
 import io.realm.RealmResults;
 import xyz.hanks.note.R;
@@ -55,6 +54,7 @@ import xyz.hanks.note.ui.activity.PreviewActivity;
 import xyz.hanks.note.ui.viewholder.NoteDetailTextViewHolder;
 import xyz.hanks.note.ui.viewholder.NoteDetailViewHolder;
 import xyz.hanks.note.ui.widget.LineTextView;
+import xyz.hanks.note.ui.widget.gallery.HGallery;
 import xyz.hanks.note.util.FileUtils;
 import xyz.hanks.note.util.ScreenUtils;
 import xyz.hanks.note.util.VectorDrawableUtils;
@@ -345,14 +345,14 @@ public class EditFragment extends BaseFragment {
 
     private void insertImage() {
         int cursorPosition = getCursorPosition();
-        HGallery.init(getContext(),new GlideImageLoader());
-        HGallery.start(getActivity(), 0x222);
+        HGallery.init(getContext(), new GlideImageLoader());
+        HGallery.startFromFragment(this, 0x222);
     }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == Activity.RESULT_OK) {
+        if (resultCode == Activity.RESULT_OK) {
             String photoPath = data.getStringExtra(HGallery.EXTRA_PATH);
             String fileName = FileUtils.saveImage(photoPath);
             if (!TextUtils.isEmpty(fileName)) {
