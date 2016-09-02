@@ -4,6 +4,8 @@ import android.app.Application;
 
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
+import xyz.hanks.note.ui.GlideImageLoader;
+import xyz.hanks.note.ui.widget.gallery.HGallery;
 
 /**
  * Application instance
@@ -21,7 +23,7 @@ public class NoteApp extends Application {
     }
 
     private void initGalley() {
-
+        HGallery.init(new GlideImageLoader());
     }
 
     private void initRealm() {

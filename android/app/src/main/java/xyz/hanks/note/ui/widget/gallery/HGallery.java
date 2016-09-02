@@ -25,13 +25,10 @@ public class HGallery {
         return sImageLoader;
     }
 
-    public static void init(Context context, HImageLoader imageLoader) {
+    public static void init(HImageLoader imageLoader) {
         sImageLoader = imageLoader;
-        init(context);
     }
 
-    public static void init(Context context) {
-    }
 
     public static void start(Activity activity, int requestCode) {
         Intent intent = new Intent(activity, GridImageActivity.class);

@@ -49,12 +49,12 @@ import xyz.hanks.note.R;
 import xyz.hanks.note.constant.Constants;
 import xyz.hanks.note.event.FabClickEvent;
 import xyz.hanks.note.model.NoteItem;
-import xyz.hanks.note.ui.GlideImageLoader;
 import xyz.hanks.note.ui.activity.PreviewActivity;
 import xyz.hanks.note.ui.viewholder.NoteDetailTextViewHolder;
 import xyz.hanks.note.ui.viewholder.NoteDetailViewHolder;
 import xyz.hanks.note.ui.widget.LineTextView;
 import xyz.hanks.note.ui.widget.gallery.HGallery;
+import xyz.hanks.note.ui.widget.gallery.HImageLoader;
 import xyz.hanks.note.util.FileUtils;
 import xyz.hanks.note.util.ScreenUtils;
 import xyz.hanks.note.util.VectorDrawableUtils;
@@ -84,6 +84,8 @@ public class EditFragment extends BaseFragment {
     private String noteId = "";
     private FloatingActionButton fab;
     private View rootView;
+    private HImageLoader imageLoader;
+
     private ViewTreeObserver.OnGlobalLayoutListener layoutListener = new ViewTreeObserver.OnGlobalLayoutListener() {
         @Override
         public void onGlobalLayout() {
@@ -149,6 +151,7 @@ public class EditFragment extends BaseFragment {
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        imageLoader = HGallery.getImageLoader(getContext());
         noteId = getArguments().getString(EXTRA_ID, "");
         if (!TextUtils.isEmpty(noteId)) {
             Realm realm = Realm.getDefaultInstance();
@@ -345,7 +348,6 @@ public class EditFragment extends BaseFragment {
 
     private void insertImage() {
         int cursorPosition = getCursorPosition();
-        HGallery.init(getContext(), new GlideImageLoader());
         HGallery.startFromFragment(this, 0x222);
     }
 
@@ -541,7 +543,7 @@ public class EditFragment extends BaseFragment {
                     holder.tv_line.setVisibility(View.INVISIBLE);
                     holder.imgLayout.setVisibility(View.VISIBLE);
                     NoteItemView noteItemView = getNoteItem(str);
-                    holder.imageView.setImageBitmap(FileUtils.getBitmapFromFile(noteItemView.name));
+                    imageLoader.displayImage(holder.imageView,FileUtils.getImagePath(noteItemView.name));
                     int itemCount = noteItemView.height % ITEM_HEIGHT == 0 ? noteItemView.height / ITEM_HEIGHT : noteItemView.height / ITEM_HEIGHT + 1;
                     final int finalHeight = itemCount * ITEM_HEIGHT;
                     Log.e(TAG, "ImageView" + finalHeight);
@@ -561,7 +563,7 @@ public class EditFragment extends BaseFragment {
                     final NoteDetailViewHolder imageHolder = (NoteDetailViewHolder) viewHolder;
                     imageHolder.tv_line.setVisibility(View.INVISIBLE);
                     imageHolder.imgLayout.setVisibility(View.VISIBLE);
-                    imageHolder.imageView.setImageBitmap(FileUtils.getBitmapFromFile(noteItemView.name));
+                    imageLoader.displayImage(imageHolder.imageView,FileUtils.getImagePath(noteItemView.name));
                     int itemCount = noteItemView.height % ITEM_HEIGHT == 0 ? noteItemView.height / ITEM_HEIGHT : noteItemView.height / ITEM_HEIGHT + 1;
                     final int finalHeight = itemCount * ITEM_HEIGHT;
                     Log.e(TAG, "ImageView" + finalHeight);

@@ -21,7 +21,6 @@
       android:layout_height="match_parent"
       android:background="#fff"
       android:scaleType="centerCrop"
-      android:src="@drawable/wall"
       android:visibility="visible"/>
     <View android:id="@+id/img_drag"
           android:layout_width="40dp"

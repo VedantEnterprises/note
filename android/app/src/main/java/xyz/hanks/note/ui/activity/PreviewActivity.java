@@ -23,6 +23,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import xyz.hanks.note.R;
+import xyz.hanks.note.ui.widget.gallery.HGallery;
+import xyz.hanks.note.ui.widget.gallery.HImageLoader;
 import xyz.hanks.note.util.FileUtils;
 import xyz.hanks.note.util.VectorDrawableUtils;
 
@@ -37,7 +39,7 @@ public class PreviewActivity extends AppCompatActivity {
     List<NoteItem> data = new ArrayList<>();
     private String noteContent = "";
     private LinearLayout linearLayout;
-
+    private HImageLoader imageLoader;
 
     public static void start(Context context, String noteContent) {
         Intent starter = new Intent(context, PreviewActivity.class);
@@ -48,9 +50,8 @@ public class PreviewActivity extends AppCompatActivity {
     @Override protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_preview);
-
+        imageLoader = HGallery.getImageLoader(this);
         noteContent = getIntent().getStringExtra(EXTRA_CONTENT);
-
         linearLayout = (LinearLayout) findViewById(R.id.container_layout);
         final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setTitle("预览");
@@ -120,7 +121,7 @@ public class PreviewActivity extends AppCompatActivity {
             } else {
                 viewHolder.tv_line.setVisibility(View.GONE);
                 viewHolder.imgLayout.setVisibility(View.VISIBLE);
-                viewHolder.imageView.setImageBitmap(FileUtils.getBitmapFromFile(noteItem.name));
+                imageLoader.displayImage(viewHolder.imageView,FileUtils.getImagePath(noteItem.name));
                 viewHolder.imageView.getLayoutParams().height = noteItem.height;
             }
             linearLayout.addView(viewHolder.rootLayout);
