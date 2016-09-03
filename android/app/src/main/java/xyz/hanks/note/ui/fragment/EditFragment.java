@@ -98,6 +98,10 @@ public class EditFragment extends BaseFragment {
                 fab.setTag(Constants.FabTag.SAVE);
                 fab.setImageDrawable(VectorDrawableUtils.getSaveDrawable(getContext()));
             } else {
+                View currentFocus = getActivity().getCurrentFocus();
+                if (currentFocus != null) {
+                    currentFocus.clearFocus();
+                }
                 fab.setTag(Constants.FabTag.PREVIEW);
                 fab.setImageDrawable(VectorDrawableUtils.getPreviewDrawable(getContext()));
             }

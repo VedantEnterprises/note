@@ -39,6 +39,7 @@ public class PreviewActivity extends AppCompatActivity {
     List<NoteItem> data = new ArrayList<>();
     private String noteContent = "";
     private LinearLayout linearLayout;
+    private View layoutRoot;
     private HImageLoader imageLoader;
 
     public static void start(Context context, String noteContent) {
@@ -52,6 +53,7 @@ public class PreviewActivity extends AppCompatActivity {
         setContentView(R.layout.activity_preview);
         imageLoader = HGallery.getImageLoader(this);
         noteContent = getIntent().getStringExtra(EXTRA_CONTENT);
+        layoutRoot = findViewById(R.id.layout_root);
         linearLayout = (LinearLayout) findViewById(R.id.container_layout);
         final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setTitle("预览");
@@ -138,7 +140,7 @@ public class PreviewActivity extends AppCompatActivity {
     @Override public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.menu_save:
-                FileUtils.takeScreenShot(linearLayout, System.currentTimeMillis() + ".png");
+                FileUtils.takeScreenShot(layoutRoot, System.currentTimeMillis() + ".png");
                 break;
         }
         return super.onOptionsItemSelected(item);
