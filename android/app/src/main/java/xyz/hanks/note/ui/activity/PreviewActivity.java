@@ -124,7 +124,8 @@ public class PreviewActivity extends AppCompatActivity {
                 viewHolder.tv_line.setVisibility(View.GONE);
                 viewHolder.imgLayout.setVisibility(View.VISIBLE);
                 imageLoader.displayImage(viewHolder.imageView,FileUtils.getImagePath(noteItem.name));
-                viewHolder.imageView.getLayoutParams().height = noteItem.height;
+                int imageHeight = FileUtils.calcImageHeight(noteItem.height,noteItem.width);
+                viewHolder.imageView.getLayoutParams().height = imageHeight;
             }
             linearLayout.addView(viewHolder.rootLayout);
         }

@@ -1,17 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:layout_width="match_parent"
-              android:layout_height="wrap_content"
-              android:orientation="vertical">
-  <xyz.hanks.note.ui.widget.LineTextView android:id="@+id/et_note_item"
-                                         android:layout_width="match_parent"
-                                         android:layout_height="wrap_content"
-                                         android:background="@null"
-                                         android:paddingLeft="34dp"
-                                         android:paddingRight="12dp"
-                                         android:textCursorDrawable="@drawable/text_cursor"
-                                         android:focusableInTouchMode="true"
-                                         android:textColor="@color/textColor1"
-                                         android:textSize="16dp"/>
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <xyz.hanks.note.ui.widget.LineTextView
+        android:id="@+id/et_note_item"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:autoLink="all"
+        android:background="@null"
+        android:focusableInTouchMode="true"
+        android:paddingLeft="34dp"
+        android:paddingRight="12dp"
+        android:textColor="@color/textColor1"
+        android:textCursorDrawable="@drawable/text_cursor"
+        android:textSize="16dp" />
 
 </LinearLayout>

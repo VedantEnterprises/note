@@ -135,4 +135,20 @@ public class FileUtils {
         view.draw(canvas);
         return returnedBitmap;
     }
+
+    public static void getImageSize(String fileName, int[] size) {
+        File file = new File(fileName);
+        if (file.exists()) {
+            BitmapFactory.Options opts = new BitmapFactory.Options();
+            opts.inJustDecodeBounds = true;
+            BitmapFactory.decodeFile(fileName, opts);
+            size[0] = opts.outWidth;
+            size[1] = opts.outHeight;
+        }
+    }
+
+    public static int calcImageHeight(int height, int width) {
+        float viewWidth = ScreenUtils.getDeviceWidth() - ScreenUtils.dpToPx(56);
+        return (int) (viewWidth / width * height);
+    }
 }

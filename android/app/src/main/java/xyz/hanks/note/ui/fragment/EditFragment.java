@@ -362,7 +362,9 @@ public class EditFragment extends BaseFragment {
             String photoPath = data.getStringExtra(HGallery.EXTRA_PATH);
             String fileName = FileUtils.saveImage(photoPath);
             if (!TextUtils.isEmpty(fileName)) {
-                String imageTag = String.format(ATT_IMAGE_TAG, 300, 400, fileName, fileName);
+                int[] size = new int[2];
+                FileUtils.getImageSize(photoPath, size);
+                String imageTag = String.format(ATT_IMAGE_TAG, size[0], size[1], "", fileName);
                 noteContent = noteContent + imageTag;
                 calcText();
             }
@@ -547,8 +549,9 @@ public class EditFragment extends BaseFragment {
                     holder.tv_line.setVisibility(View.INVISIBLE);
                     holder.imgLayout.setVisibility(View.VISIBLE);
                     NoteItemView noteItemView = getNoteItem(str);
-                    imageLoader.displayImage(holder.imageView,FileUtils.getImagePath(noteItemView.name));
-                    int itemCount = noteItemView.height % ITEM_HEIGHT == 0 ? noteItemView.height / ITEM_HEIGHT : noteItemView.height / ITEM_HEIGHT + 1;
+                    imageLoader.displayImage(holder.imageView, FileUtils.getImagePath(noteItemView.name));
+                    int imageHeight = FileUtils.calcImageHeight(noteItemView.height,noteItemView.width);
+                    int itemCount = imageHeight % ITEM_HEIGHT == 0 ? imageHeight / ITEM_HEIGHT : imageHeight / ITEM_HEIGHT + 1;
                     final int finalHeight = itemCount * ITEM_HEIGHT;
                     Log.e(TAG, "ImageView" + finalHeight);
                     holder.rootLayout.getLayoutParams().height = finalHeight;
@@ -567,8 +570,9 @@ public class EditFragment extends BaseFragment {
                     final NoteDetailViewHolder imageHolder = (NoteDetailViewHolder) viewHolder;
                     imageHolder.tv_line.setVisibility(View.INVISIBLE);
                     imageHolder.imgLayout.setVisibility(View.VISIBLE);
-                    imageLoader.displayImage(imageHolder.imageView,FileUtils.getImagePath(noteItemView.name));
-                    int itemCount = noteItemView.height % ITEM_HEIGHT == 0 ? noteItemView.height / ITEM_HEIGHT : noteItemView.height / ITEM_HEIGHT + 1;
+                    imageLoader.displayImage(imageHolder.imageView, FileUtils.getImagePath(noteItemView.name));
+                    int imageHeight = FileUtils.calcImageHeight(noteItemView.height,noteItemView.width);
+                    int itemCount = imageHeight % ITEM_HEIGHT == 0 ? imageHeight / ITEM_HEIGHT : imageHeight / ITEM_HEIGHT + 1;
                     final int finalHeight = itemCount * ITEM_HEIGHT;
                     Log.e(TAG, "ImageView" + finalHeight);
                     imageHolder.rootLayout.getLayoutParams().height = finalHeight;
