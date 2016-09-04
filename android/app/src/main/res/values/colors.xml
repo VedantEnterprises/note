@@ -17,4 +17,5 @@
     <color name="starColor">#F9C753</color>
     <color name="imgColor">#E0D7C8</color>
     <color name="white">#ffffff</color>
+    <color name="transparent">#00ffffff</color>
 </resources>
