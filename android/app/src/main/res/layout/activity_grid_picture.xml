@@ -55,10 +55,10 @@
             android:textSize="20sp" />
 
         <ImageView
-            android:src="@drawable/triangle"
             android:layout_width="30dp"
-            android:translationX="-10dp"
-            android:layout_height="8dp" />
+            android:layout_height="8dp"
+            android:src="@drawable/triangle"
+            android:translationX="-10dp" />
     </android.support.v7.widget.Toolbar>
 
 </RelativeLayout>
