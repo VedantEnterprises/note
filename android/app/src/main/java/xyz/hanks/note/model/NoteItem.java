@@ -14,6 +14,7 @@ public class NoteItem implements RealmModel {
 
     public static final String UPDATED_AT = "updatedAt";
     public static final String OBJECT_ID = "objectId";
+    public static final String DELETED = "deleted";
 
     @Required
     @PrimaryKey
@@ -28,7 +29,8 @@ public class NoteItem implements RealmModel {
     public int positionInFolder;
     public int folderId;
 
-    @Override public String toString() {
+    @Override
+    public String toString() {
         return "NoteItem{" +
                 "objectId='" + objectId + '\'' +
                 ", createdAt=" + createdAt +

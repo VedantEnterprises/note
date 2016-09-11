@@ -47,6 +47,7 @@ import io.realm.Realm;
 import io.realm.RealmResults;
 import xyz.hanks.note.R;
 import xyz.hanks.note.constant.Constants;
+import xyz.hanks.note.datamanager.db.NoteItemManager;
 import xyz.hanks.note.event.FabClickEvent;
 import xyz.hanks.note.model.NoteItem;
 import xyz.hanks.note.ui.activity.PreviewActivity;
@@ -294,17 +295,6 @@ public class EditFragment extends BaseFragment {
         layoutManager.scrollToPositionWithOffset(0, lastScrollY);
     }
 
-    private void updateNote(final NoteItem tmp) {
-        Realm realm = Realm.getDefaultInstance();
-        realm.executeTransaction(new Realm.Transaction() {
-            @Override
-            public void execute(Realm realm) {
-                realm.copyToRealmOrUpdate(tmp);
-            }
-        });
-        realm.close();
-    }
-
     private void saveNote() {
         hideKeyboard();
         measureText();
@@ -317,10 +307,7 @@ public class EditFragment extends BaseFragment {
             tmp.objectId = UUID.randomUUID().toString();
             tmp.createdAt = System.currentTimeMillis();
         } else {
-            Realm realm = Realm.getDefaultInstance();
-            NoteItem noteItem = realm.where(NoteItem.class).equalTo(NoteItem.OBJECT_ID, noteId).findFirst();
-            tmp = realm.copyFromRealm(noteItem);
-            realm.close();
+            tmp = NoteItemManager.getNoteById(noteId);
         }
         tmp.updatedAt = System.currentTimeMillis();
         tmp.detail = noteContent;
@@ -331,7 +318,8 @@ public class EditFragment extends BaseFragment {
                 break;
             }
         }
-        updateNote(tmp);
+        NoteItemManager.createOrUpdateNote(tmp);
+        noteId = tmp.objectId;
         Toast.makeText(getContext(), "save success!", Toast.LENGTH_SHORT).show();
     }
 
@@ -550,7 +538,7 @@ public class EditFragment extends BaseFragment {
                     holder.imgLayout.setVisibility(View.VISIBLE);
                     NoteItemView noteItemView = getNoteItem(str);
                     imageLoader.displayImage(holder.imageView, FileUtils.getImagePath(noteItemView.name));
-                    int imageHeight = FileUtils.calcImageHeight(noteItemView.height,noteItemView.width);
+                    int imageHeight = FileUtils.calcImageHeight(noteItemView.height, noteItemView.width);
                     int itemCount = imageHeight % ITEM_HEIGHT == 0 ? imageHeight / ITEM_HEIGHT : imageHeight / ITEM_HEIGHT + 1;
                     final int finalHeight = itemCount * ITEM_HEIGHT;
                     Log.e(TAG, "ImageView" + finalHeight);
@@ -571,7 +559,7 @@ public class EditFragment extends BaseFragment {
                     imageHolder.tv_line.setVisibility(View.INVISIBLE);
                     imageHolder.imgLayout.setVisibility(View.VISIBLE);
                     imageLoader.displayImage(imageHolder.imageView, FileUtils.getImagePath(noteItemView.name));
-                    int imageHeight = FileUtils.calcImageHeight(noteItemView.height,noteItemView.width);
+                    int imageHeight = FileUtils.calcImageHeight(noteItemView.height, noteItemView.width);
                     int itemCount = imageHeight % ITEM_HEIGHT == 0 ? imageHeight / ITEM_HEIGHT : imageHeight / ITEM_HEIGHT + 1;
                     final int finalHeight = itemCount * ITEM_HEIGHT;
                     Log.e(TAG, "ImageView" + finalHeight);

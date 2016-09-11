@@ -57,6 +57,16 @@ public class MainFragment extends BaseFragment {
                 text = "延迟一项";
             }
             Snackbar.make(viewHolder.itemView, text, Snackbar.LENGTH_LONG)
+                    .setCallback(new Snackbar.Callback() {
+                        @Override
+                        public void onDismissed(Snackbar snackbar, int event) {
+                            super.onDismissed(snackbar, event);
+                            if (event != DISMISS_EVENT_ACTION) {
+                                //will be true if user not click on Action button (for example: manual dismiss, dismiss by swipe
+                                NoteItemManager.deleteNote(noteItem);
+                            }
+                        }
+                    })
                     .setAction("撤销", new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
