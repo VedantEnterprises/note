@@ -1,15 +1,16 @@
 package xyz.hanks.note.ui.adapter;
 
-import android.graphics.drawable.ShapeDrawable;
-import android.graphics.drawable.shapes.OvalShape;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import xyz.hanks.note.R;
 import xyz.hanks.note.model.NoteItem;
 import xyz.hanks.note.util.PrettyDateUtils;
@@ -59,21 +60,28 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.NoteItemViewHo
         void onClick(View v, int adapterPosition);
     }
 
-    class NoteItemViewHolder extends RecyclerView.ViewHolder {
+    public class NoteItemViewHolder extends RecyclerView.ViewHolder {
 
+        @BindView(R.id.tv_modify_time)
         public TextView tvModifyTime;
+        @BindView(R.id.tv_title)
         public TextView tvTitle;
+        @BindView(R.id.tv_note_detail)
         public TextView tvNoteDetail;
+        @BindView(R.id.cb_favorite)
         public View cbFavorite;
+        @BindView(R.id.layout_item)
+        public View layoutItem;
+        @BindView(R.id.iv_img)
         public TextView ivImage;
+        @BindView(R.id.iv_del)
+        public ImageView ivDel;
+        @BindView(R.id.iv_edit)
+        public ImageView ivEdit;
 
         public NoteItemViewHolder(View itemView) {
             super(itemView);
-            tvModifyTime = (TextView) itemView.findViewById(R.id.tv_modify_time);
-            tvTitle = (TextView) itemView.findViewById(R.id.tv_title);
-            tvNoteDetail = (TextView) itemView.findViewById(R.id.tv_note_detail);
-            cbFavorite = itemView.findViewById(R.id.cb_favorite);
-            ivImage = (TextView) itemView.findViewById(R.id.iv_img);
+            ButterKnife.bind(this, itemView);
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
